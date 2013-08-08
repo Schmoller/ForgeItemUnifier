@@ -2,6 +2,10 @@ package schmoller.unifier;
 
 import java.util.HashSet;
 
+import com.google.common.base.Throwables;
+
+import cpw.mods.fml.common.Loader;
+
 public class ProcessorManager
 {
 	private HashSet<IProcessor> mProcessors = new HashSet<IProcessor>();
@@ -9,6 +13,23 @@ public class ProcessorManager
 	public void registerProcessor(IProcessor processor)
 	{
 		mProcessors.add(processor);
+	}
+	
+	public void registerModProcessor(String modId, Class<? extends IProcessor> clazz)
+	{
+		if(Loader.isModLoaded(modId))
+		{
+			try
+			{
+				IProcessor processor = clazz.newInstance();
+				mProcessors.add(processor);
+			}
+			catch(Throwable e)
+			{
+				Throwables.propagateIfPossible(e);
+				throw new RuntimeException(e);
+			}
+		}
 	}
 	
 	public void execute(Mappings mappings)
@@ -29,4 +50,6 @@ public class ProcessorManager
 			}
 		}
 	}
+	
+	
 }

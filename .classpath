@@ -16,5 +16,11 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/CodeChickenCore"/>
 	<classpathentry kind="lib" path="/Minecraft/lib/Buildcraft.jar"/>
 	<classpathentry kind="lib" path="/Minecraft/lib/ComputerCraft1.53.jar"/>
+	<classpathentry kind="lib" path="D:/Existing Mods/Factorization-0.8.01-deobf.jar"/>
+	<classpathentry kind="lib" path="D:/Existing Mods/forestry-A-2.2.8.4-deobf.jar"/>
+	<classpathentry kind="lib" path="D:/Existing Mods/industrialcraft-2_1.117.921-deobf.jar"/>
+	<classpathentry kind="lib" path="D:/Existing Mods/Railcraft_1.5.2-7.3.0.0-deobf.jar"/>
+	<classpathentry kind="lib" path="D:/Existing Mods/TConstruct_1.3.6.7-deobf.jar"/>
+	<classpathentry kind="lib" path="D:/Existing Mods/Thaumcraft3.0.5h-deobf.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
