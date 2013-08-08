@@ -9,8 +9,8 @@ import schmoller.unifier.mods.forestry.*;
 import schmoller.unifier.mods.ic2.*;
 import schmoller.unifier.mods.railcraft.*;
 import schmoller.unifier.mods.thaumcraft.*;
-import schmoller.unifier.vanilla.CraftingProcessor;
-import schmoller.unifier.vanilla.SmeltingProcessor;
+import schmoller.unifier.mods.tinkersConstruct.*;
+import schmoller.unifier.vanilla.*;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.Configuration;
@@ -85,6 +85,13 @@ public class ModForgeUnifier
 		manager.registerModProcessor("factorization", CrystallizerProcessor.class);
 		manager.registerModProcessor("factorization", GrinderProcessor.class);
 		manager.registerModProcessor("factorization", SlagFurnaceProcessor.class);
+		
+		// Tinkers construct
+		manager.registerModProcessor("TConstruct", TableCastingProcessor.class);
+		manager.registerModProcessor("TConstruct", BasinCastingProcessor.class);
+		
+		// Applied energistics
+		manager.registerModProcessor("AppliedEnergistics", schmoller.unifier.mods.appeng.GrinderProcessor.class);
 		
 		log.info("Starting re-mapping of items");
 		manager.execute(mappings);
