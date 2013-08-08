@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import schmoller.unifier.mods.factorization.*;
 import schmoller.unifier.mods.forestry.*;
 import schmoller.unifier.mods.ic2.*;
 import schmoller.unifier.mods.railcraft.*;
@@ -80,6 +81,10 @@ public class ModForgeUnifier
 		manager.registerModProcessor("Forestry", FabricatorProcessor.class);
 		manager.registerModProcessor("Forestry", SqueezerProcessor.class);
 		
+		// Factorization processors
+		manager.registerModProcessor("factorization", CrystallizerProcessor.class);
+		manager.registerModProcessor("factorization", GrinderProcessor.class);
+		manager.registerModProcessor("factorization", SlagFurnaceProcessor.class);
 		
 		log.info("Starting re-mapping of items");
 		manager.execute(mappings);

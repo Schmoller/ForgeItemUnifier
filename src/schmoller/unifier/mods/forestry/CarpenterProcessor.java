@@ -22,14 +22,20 @@ public class CarpenterProcessor implements IProcessor
 	@Override
 	public int applyMappings( Mappings mappings )
 	{
-		Map<Object[], ItemStack> recipes = RecipeManagers.carpenterManager.getRecipes();
+		Map<Object[], Object[]> recipes = RecipeManagers.carpenterManager.getRecipes();
 		
 		int count = 0;
 		
-		for(Entry<Object[], ItemStack> entry : recipes.entrySet())
+		for(Entry<Object[], Object[]> entry : recipes.entrySet())
 		{
-			if(mappings.applyMapping(entry.getValue()))
-				++count;
+			for(Object output : entry.getValue())
+			{
+				if(output instanceof ItemStack)
+				{
+					if(mappings.applyMapping((ItemStack)output))
+						++count;
+				}
+			}
 		}
 
 		return count;
