@@ -6,9 +6,11 @@ import java.util.logging.Logger;
 
 import schmoller.unifier.mods.factorization.*;
 import schmoller.unifier.mods.forestry.*;
+import schmoller.unifier.mods.gregtech.*;
 import schmoller.unifier.mods.ic2.*;
 import schmoller.unifier.mods.railcraft.*;
 import schmoller.unifier.mods.thaumcraft.*;
+import schmoller.unifier.mods.thermalExpansion.*;
 import schmoller.unifier.mods.tinkersConstruct.*;
 import schmoller.unifier.vanilla.*;
 
@@ -92,6 +94,28 @@ public class ModForgeUnifier
 		
 		// Applied energistics
 		manager.registerModProcessor("AppliedEnergistics", schmoller.unifier.mods.appeng.GrinderProcessor.class);
+		
+		// Thermal Expansion
+		manager.registerModProcessor("ThermalExpansion", PulverizerProcessor.class);
+		manager.registerModProcessor("ThermalExpansion", SawmillProcessor.class);
+		manager.registerModProcessor("ThermalExpansion", InductionSmelterProcessor.class);
+		
+		// Gregtech
+		manager.registerModProcessor("GregTech_Addon", AlloySmelterProcessor.class);
+		manager.registerModProcessor("GregTech_Addon", AssemblerProcessor.class);
+		manager.registerModProcessor("GregTech_Addon", CannerProcessor.class);
+		manager.registerModProcessor("GregTech_Addon", ChemicalReactorProcessor.class);
+		manager.registerModProcessor("GregTech_Addon", DistillationProcessor.class);
+		manager.registerModProcessor("GregTech_Addon", ElectrolyzerProcessor.class);
+		manager.registerModProcessor("GregTech_Addon", FusionProcessor.class);
+		manager.registerModProcessor("GregTech_Addon", ImplosionCompressorProcessor.class);
+		manager.registerModProcessor("GregTech_Addon", IndustrialBlastFurnaceProcessor.class);
+		manager.registerModProcessor("GregTech_Addon", IndustrialCentrifugeProcessor.class);
+		manager.registerModProcessor("GregTech_Addon", IndustrialGrinderProcessor.class);
+		manager.registerModProcessor("GregTech_Addon", IndustrialSawmillProcessor.class);
+		manager.registerModProcessor("GregTech_Addon", PlateBenderProcessor.class);
+		manager.registerModProcessor("GregTech_Addon", VacuumFreezerProcessor.class);
+		manager.registerModProcessor("GregTech_Addon", WiremillProcessor.class);
 		
 		log.info("Starting re-mapping of items");
 		manager.execute(mappings);
