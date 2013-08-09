@@ -220,13 +220,10 @@ public class ModForgeUnifier implements IModPacketHandler
 			openGui(null);
 		else if(packet instanceof ModPacketChangeMapping)
 		{
-			if(FMLCommonHandler.instance().getSide() == Side.SERVER)
-			{
-				mappings.beingModify();
-				for(Entry<String, ItemStack> entry : ((ModPacketChangeMapping) packet).newMappings.entrySet())
-					mappings.changeMapping(entry.getKey(), entry.getValue());
-				mappings.endModify();
-			}
+			mappings.beingModify();
+			for(Entry<String, ItemStack> entry : ((ModPacketChangeMapping) packet).newMappings.entrySet())
+				mappings.changeMapping(entry.getKey(), entry.getValue());
+			mappings.endModify();
 		}
 		else
 			return false;
