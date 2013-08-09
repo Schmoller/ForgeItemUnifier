@@ -1,0 +1,14 @@
+[
+{
+  "modid": "ForgeUnifier",
+  "name": "Forge Unifier",
+  "description": "The best solution to having multiple types of equivalent objects",
+  "version": "##FUVersion##",
+  "mcversion": "1.5.2",
+  "updateUrl": "",
+  "authors": ["Schmoller"],
+  "parent": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

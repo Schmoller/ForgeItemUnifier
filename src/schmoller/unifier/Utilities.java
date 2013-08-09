@@ -54,14 +54,31 @@ public class Utilities
 		if(item == null)
 			return "";
 		
-		String name = "";
-		name = item.getDisplayName();
+		String name = String.format("%d:%d", item.itemID, item.getItemDamage());
+
+		try
+		{
+			name = item.getItem().getLocalizedName(item);
+		}
+		catch(Exception e)
+		{
+			// Some mods throw exceptions here during init phase
+		}
+		
+		try
+		{
+			if(name == null || name.isEmpty())
+				name = LanguageRegistry.instance().getStringLocalization(item.getItem().getUnlocalizedName(item) + ".name");
+			if(name == null || name.isEmpty())
+				name = item.getItemName();
+		}
+		catch(Exception e)
+		{
+			// Some mods throw exceptions here during init phase
+		}
 		
 		if(name == null || name.isEmpty())
-			name = LanguageRegistry.instance().getStringLocalization(item.getItem().getLocalizedName(item) + ".name");
-		
-		if(name == null || name.isEmpty())
-			name = item.getItemName();
+			name = String.format("%d:%d", item.itemID, item.getItemDamage());
 		
 		return name;
 	}

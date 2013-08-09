@@ -23,7 +23,7 @@ import cpw.mods.fml.common.Mod.*;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(name="Forge Unifier", modid="ForgeUnifier", version="1.1", dependencies="after:*")
+@Mod(name="Forge Unifier", modid="ForgeUnifier", version="##FUVersion##", dependencies="after:*")
 public class ModForgeUnifier
 {
 	public static Logger log;
