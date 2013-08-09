@@ -22,6 +22,7 @@ import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.Mod.*;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 
 @Mod(name="Forge Unifier", modid="ForgeUnifier", version="##FUVersion##", dependencies="after:*")
 public class ModForgeUnifier
@@ -135,4 +136,13 @@ public class ModForgeUnifier
 //		event.buildSoftDependProxy("Thaumcraft", ThaumcraftRemapper.class.getName());
 //		event.buildSoftDependProxy("RedPowerCore", RP2Remapper.class.getName());
 	}
+	
+	@ServerStarting
+	public void onServerStarting(FMLServerStartingEvent event)
+	{
+		if(event.getServer().isSinglePlayer())
+			event.registerServerCommand(new CommandUnifier());
+	}
+	
+	
 }

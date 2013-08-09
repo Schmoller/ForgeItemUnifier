@@ -3,8 +3,10 @@ package schmoller.unifier;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import cpw.mods.fml.common.ModContainer;
 import net.minecraft.item.ItemStack;
@@ -82,6 +84,47 @@ public class Mappings
 		
 		return String.format("%s - %s[%d:%d]", modId, itemId, item.itemID, item.getItemDamage());
 	}
+	
+	public Set<String> getMappableOres()
+	{
+		HashSet<String> ores = new HashSet<String>();
+		
+		String[] allOres = OreDictionary.getOreNames();
+		for(String oreName : allOres)
+		{
+			if(mBlackList.contains(oreName))
+				continue;
+		
+			// Dont use special entries
+			if(oreName.contains("$") || oreName.contains(".") || oreName.contains(":"))
+				continue;
+			
+			ores.add(oreName);
+		}
+		
+		return ores;
+	}
+	public Set<String> getMappableOres(OreCategory category)
+	{
+		HashSet<String> ores = new HashSet<String>();
+		
+		String[] allOres = OreDictionary.getOreNames();
+		for(String oreName : allOres)
+		{
+			if(mBlackList.contains(oreName))
+				continue;
+		
+			// Dont use special entries
+			if(oreName.contains("$") || oreName.contains(".") || oreName.contains(":"))
+				continue;
+			
+			if(OreCategory.getCategory(oreName) == category)
+				ores.add(oreName);
+		}
+		
+		return ores;
+	}
+	
 	
 	public void loadMappings(Configuration config)
 	{
