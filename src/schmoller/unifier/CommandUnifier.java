@@ -1,7 +1,5 @@
 package schmoller.unifier;
 
-import schmoller.unifier.gui.GuiUnifierSettings;
-import cpw.mods.fml.client.FMLClientHandler;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,7 +34,7 @@ public class CommandUnifier extends CommandBase
 	{
 		EntityPlayer player = (EntityPlayer)sender;
 		
-		FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings());
+		ModForgeUnifier.openGui(player);
 	}
 	
 	

@@ -1,10 +1,12 @@
 package schmoller.unifier.gui;
 
 import java.util.Map.Entry;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -30,6 +32,23 @@ public class GuiUnifierSettings extends GuiScreen
 	private GuiOreList mOreList = null;
 	private OreCategory mSelected = OreCategory.Ingots;
 	private RenderItem renderItem = new RenderItem();
+	
+	private long mLastClickTime = 0;
+	private int mLastClicked = -1; 
+	private boolean mHasClicked = false;
+
+	public static final ItemStack unknownItem = new ItemStack(Block.bedrock);
+	
+	public GuiUnifierSettings()
+	{
+		ModForgeUnifier.mappings.beingModify();
+	}
+	
+	@Override
+	public void onGuiClosed()
+	{
+		ModForgeUnifier.mappings.endModify();
+	}
 	
 	@Override
 	public void initGui()
@@ -57,6 +76,7 @@ public class GuiUnifierSettings extends GuiScreen
 	private void setOreCategory(OreCategory category)
 	{
 		mOreList = new GuiOreList(this, 20, 60, width / 2 - 20, height - 90, ModForgeUnifier.mappings, category);
+		mLastClicked = -1;
 		//mOreList.registerScrollButtons(buttonList, 300,301);
 	}
 	
@@ -215,7 +235,7 @@ public class GuiUnifierSettings extends GuiScreen
 			{
 				drawCenteredString(this.fontRenderer, EnumChatFormatting.GOLD + selected.getKey(), (int)(width * 0.75), 65, 0xffffff);
 				
-				ItemStack item = ModForgeUnifier.mappings.getMappings().get(selected.getKey());
+				ItemStack item = ModForgeUnifier.mappings.getMapping(selected.getKey());
 
 				drawString(this.fontRenderer, "Using: ", (int)((width + 10) / 2), 85, 0xffffff);
 				
@@ -235,7 +255,7 @@ public class GuiUnifierSettings extends GuiScreen
 				else
 				{
 					// TODO: Draw unknown symbol here
-					drawItemStack(new ItemStack(Block.bedrock), (int)((width + 80) / 2), 80);
+					drawItemStack(unknownItem, (int)((width + 80) / 2), 80);
 					
 					drawString(this.fontRenderer, "Not mapped", (int)((width + 130) / 2), 80, 0xffffff);
 					drawString(this.fontRenderer, EnumChatFormatting.YELLOW + "Unknown", (int)((width + 130) / 2), 91, 0xffffff);
@@ -246,13 +266,67 @@ public class GuiUnifierSettings extends GuiScreen
 				int xx = ((width + 10) / 2);
 				int yy = 125;
 				
+				int index = 0;
+				
+				{
+					if(mouseX >= xx-1 && mouseX < xx + 17 && mouseY >= yy-1 && mouseY < yy + 17)
+					{
+						hoverItem = unknownItem;
+						drawRect(xx-1, yy-1, xx + 17, yy + 17, -2130706433);
+						
+						if(Mouse.isButtonDown(0) && !mHasClicked)
+						{
+							boolean doubleClick = (index == mLastClicked && System.currentTimeMillis() - mLastClickTime < 250L);
+							
+							mHasClicked = true;
+
+							if (doubleClick)
+							{
+								// Select it
+								
+								ModForgeUnifier.mappings.changeMapping(selected.getKey(), new ItemStack(0, 0, 0));
+							}
+							
+							mLastClickTime = System.currentTimeMillis();
+							mLastClicked = index;
+						}
+					}
+					
+					drawItemStack(unknownItem, xx, yy);
+					
+					xx += 18;
+					
+					if(xx + 18 >= width - 20)
+					{
+						xx = ((width + 10) / 2);
+						yy += 18;
+					}
+					
+					++index;
+				}
+				
 				for(ItemStack option : selected.getValue())
 				{
 					if(mouseX >= xx-1 && mouseX < xx + 17 && mouseY >= yy-1 && mouseY < yy + 17)
 					{
 						hoverItem = option;
 						drawRect(xx-1, yy-1, xx + 17, yy + 17, -2130706433);
-						// TODO: Make it glow
+						
+						if(Mouse.isButtonDown(0) && !mHasClicked)
+						{
+							boolean doubleClick = (index == mLastClicked && System.currentTimeMillis() - mLastClickTime < 250L);
+							
+							mHasClicked = true;
+
+							if (doubleClick)
+							{
+								// Select it
+								ModForgeUnifier.mappings.changeMapping(selected.getKey(), option);
+							}
+							
+							mLastClickTime = System.currentTimeMillis();
+							mLastClicked = index;
+						}
 					}
 					
 					drawItemStack(option, xx, yy);
@@ -264,6 +338,8 @@ public class GuiUnifierSettings extends GuiScreen
 						xx = ((width + 10) / 2);
 						yy += 18;
 					}
+					
+					++index;
 				}
 			}
 			else
@@ -275,24 +351,38 @@ public class GuiUnifierSettings extends GuiScreen
 			
 			if(hoverItem != null)
 			{
-				List list = hoverItem.getTooltip(this.mc.thePlayer, false);
-				for (int k = 0; k < list.size(); ++k)
-		        {
-		            if (k == 0)
-		                list.set(k, "\u00a7" + Integer.toHexString(hoverItem.getRarity().rarityColor) + (String)list.get(k));
-		            else
-		                list.set(k, EnumChatFormatting.GRAY + (String)list.get(k));
-		        }
-				
-				ModContainer container = Utilities.findOwningMod(hoverItem);
-				
-				if(container == null)
-					list.add(EnumChatFormatting.YELLOW + "Unknown");
+				List list;
+				if(hoverItem == unknownItem)
+				{
+					list = new ArrayList<String>();
+					list.add(EnumChatFormatting.YELLOW + "No Mapping");
+				}
 				else
-					list.add(EnumChatFormatting.YELLOW + container.getName());
+				{
+					list = hoverItem.getTooltip(this.mc.thePlayer, false);
+					for (int k = 0; k < list.size(); ++k)
+			        {
+			            if (k == 0)
+			                list.set(k, "\u00a7" + Integer.toHexString(hoverItem.getRarity().rarityColor) + (String)list.get(k));
+			            else
+			                list.set(k, EnumChatFormatting.GRAY + (String)list.get(k));
+			        }
+					
+					ModContainer container = Utilities.findOwningMod(hoverItem);
+					
+					if(container == null)
+						list.add(EnumChatFormatting.YELLOW + "Unknown");
+					else
+						list.add(EnumChatFormatting.YELLOW + container.getName());
+				}
 				
 				drawHoveringText(list, mouseX, mouseY, fontRenderer);
 			}
 		}
+        
+        if(!Mouse.isButtonDown(0))
+        {
+        	mHasClicked = false;
+        }
 	}
 }

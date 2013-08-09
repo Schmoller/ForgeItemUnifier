@@ -6,10 +6,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import schmoller.unifier.packets.ModPacketChangeMapping;
+
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.ModContainer;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
 import net.minecraftforge.oredict.OreDictionary;
@@ -17,6 +24,7 @@ import net.minecraftforge.oredict.OreDictionary;
 public class Mappings
 {
 	private HashMap<String, ItemStack> mMappings = new HashMap<String, ItemStack>();
+	private HashMap<String, ItemStack> mPendingMappings = null;
 	
 	// All entries never allowed to be simplified
 	private static List<String> mBlackList = Arrays.asList(new String[] {"logWood","plankWood","slabWood","stairWood","stickWood","treeSapling","treeLeaves"});
@@ -244,6 +252,37 @@ public class Mappings
 		return Collections.unmodifiableMap(mMappings);
 	}
 	
+	public ItemStack getMapping(String name)
+	{
+		if(mPendingMappings != null && mPendingMappings.containsKey(name))
+		{
+			ItemStack item = mPendingMappings.get(name);
+			if(item.itemID == 0)
+				return null;
+			return item;
+		}
+		
+		return mMappings.get(name);
+	}
+	
+	public void changeMapping(String oreName, ItemStack item)
+	{
+		// Check that it is allowed
+		int oreId = OreDictionary.getOreID(item);
+		
+		if(oreId != -1)
+		{
+			String name = OreDictionary.getOreName(oreId);
+			if(!oreName.equals(name))
+				throw new IllegalArgumentException("Item is not of the correct category");
+		}
+		
+		if(mPendingMappings != null)
+			mPendingMappings.put(oreName, item);
+		else
+			mMappings.put(oreName, item);
+	}
+	
 	public boolean applyMapping(ItemStack input)
 	{
 		int oreId = OreDictionary.getOreID(input);
@@ -273,5 +312,92 @@ public class Mappings
 			return mMappings.containsKey(OreDictionary.getOreName(oreId));
 		
 		return false;
+	}
+	
+	public void write(NBTTagCompound root)
+	{
+		NBTTagList map = new NBTTagList();
+		for(Entry<String, ItemStack> entry : mMappings.entrySet())
+		{
+			NBTTagCompound tag = new NBTTagCompound();
+			tag.setString("name", entry.getKey());
+			tag.setInteger("id", entry.getValue().itemID);
+			tag.setInteger("data", entry.getValue().getItemDamage());
+			map.appendTag(tag);
+		}
+		
+		root.setTag("mappings", map);
+	}
+	
+	public void read(NBTTagCompound root)
+	{
+		mMappings.clear();
+		
+		NBTTagList map = root.getTagList("mappings");
+		
+		for(int i = 0; i < map.tagCount(); ++i)
+		{
+			NBTTagCompound tag = (NBTTagCompound)map.tagAt(i);
+			
+			String name = tag.getString("name");
+			
+			int id = tag.getInteger("id");
+			int data = tag.getInteger("data");
+			
+			ItemStack item = new ItemStack(id, 1, data);
+			
+			if(item.getItem() == null)
+			{
+				ModForgeUnifier.log.severe(String.format("Unknown item [%d:%d] used for %s. Ignoring", id, data, name));
+				continue;
+			}
+			
+			int oreId = OreDictionary.getOreID(item);
+			
+			if(oreId == -1)
+			{
+				ModForgeUnifier.log.severe(String.format("Item [%d:%d] used for %s is not in the ore dictionary. Ignoring", id, data, name));
+				continue;
+			}
+			
+			String oreName = OreDictionary.getOreName(oreId);
+			if(!name.equalsIgnoreCase(oreName))
+			{
+				ModForgeUnifier.log.severe(String.format("Item [%d:%d] used for %s has the ore type %s. Ignoring", id, data, name, oreName));
+				continue;
+			}
+			
+			mMappings.put(name, item);
+		}
+	}
+	
+	public void beingModify()
+	{
+		mPendingMappings = new HashMap<String, ItemStack>();
+	}
+	
+	public void endModify()
+	{
+		for(Entry<String, ItemStack> entry : mPendingMappings.entrySet())
+		{
+			if(entry.getValue().itemID == 0)
+				mMappings.remove(entry.getKey());
+			else
+				mMappings.put(entry.getKey(), entry.getValue());
+		}
+		
+		if(FMLCommonHandler.instance().getSide() == Side.CLIENT)
+		{
+			ModPacketChangeMapping mappings = new ModPacketChangeMapping();
+			mappings.newMappings = (HashMap<String, ItemStack>) mPendingMappings.clone();
+			
+			ModForgeUnifier.packetHandler.sendPacketToServer(mappings);
+		}
+		else
+		{
+			ModForgeUnifier.saveMappings();
+		}
+		
+		mPendingMappings = null;
 	}
 }

@@ -114,7 +114,7 @@ public class GuiOreList extends GuiScreen
 		fontRenderer.drawString(fontRenderer.trimStringToWidth(entry.getKey(), width), this.x + 26, y + 9, 0xFFFFFF);
 		fontRenderer.drawString("Available: " + entry.getValue().size(), this.x + 26, y + 10 + fontRenderer.FONT_HEIGHT, 0xAAAAAA);
 		
-		ItemStack item = mMappings.getMappings().get(entry.getKey());
+		ItemStack item = mMappings.getMapping(entry.getKey());
 		
 		if(item != null)
 			mParent.drawItemStack(item, x + 6, y + 9);
@@ -129,7 +129,7 @@ public class GuiOreList extends GuiScreen
 	protected void slotHover(int index, int x, int y, int mouseX, int mouseY, Tessellator tes)
 	{
 		Entry<String, Set<ItemStack>> entry = mOreDict.get(index);
-		ItemStack item = mMappings.getMappings().get(entry.getKey());
+		ItemStack item = mMappings.getMapping(entry.getKey());
 		
 		if (mouseX >= 6 && mouseX < 6 + 18 && mouseY >= 9 && mouseY < 9 + 18)
 		{

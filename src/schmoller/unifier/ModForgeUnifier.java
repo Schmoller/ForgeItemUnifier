@@ -1,9 +1,16 @@
 package schmoller.unifier;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import schmoller.network.IModPacketHandler;
+import schmoller.network.ModPacket;
+import schmoller.network.PacketManager;
+import schmoller.unifier.gui.GuiUnifierSettings;
 import schmoller.unifier.mods.factorization.*;
 import schmoller.unifier.mods.forestry.*;
 import schmoller.unifier.mods.gregtech.*;
@@ -12,25 +19,43 @@ import schmoller.unifier.mods.railcraft.*;
 import schmoller.unifier.mods.thaumcraft.*;
 import schmoller.unifier.mods.thermalExpansion.*;
 import schmoller.unifier.mods.tinkersConstruct.*;
+import schmoller.unifier.packets.ModPacketChangeMapping;
+import schmoller.unifier.packets.ModPacketOpenGui;
 import schmoller.unifier.vanilla.*;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.Configuration;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.ModContainer;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.Mod.*;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.relauncher.Side;
 
 @Mod(name="Forge Unifier", modid="ForgeUnifier", version="##FUVersion##", dependencies="after:*")
-public class ModForgeUnifier
+@NetworkMod(clientSideRequired = true, serverSideRequired = true)
+public class ModForgeUnifier implements IModPacketHandler
 {
 	public static Logger log;
-	public static Mappings mappings;
+	public static Mappings mappings = null;
+	public static ProcessorManager manager;
 	
 	private Configuration mConfig;
+	
+	@SidedProxy(clientSide="schmoller.network.ClientPacketManager", serverSide="schmoller.network.PacketManager")
+	public static PacketManager packetHandler;
 	
 	@PreInit
 	public void preInit(FMLPreInitializationEvent event)
@@ -41,6 +66,18 @@ public class ModForgeUnifier
 		
 		File configFile = event.getSuggestedConfigurationFile();
 		mConfig = new Configuration(configFile);
+		
+		manager = new ProcessorManager();
+	}
+	
+	@Init
+	public void init(FMLInitializationEvent event)
+	{
+		packetHandler.initialize("FrgUni");
+		packetHandler.registerHandler(this);
+		
+		packetHandler.registerPacket(ModPacketOpenGui.class);
+		packetHandler.registerPacket(ModPacketChangeMapping.class);
 	}
 	
 	@PostInit
@@ -48,16 +85,6 @@ public class ModForgeUnifier
 	{
 		log.info("Loading mappings:");
 		
-		mappings = new Mappings();
-		mappings.loadMappings(mConfig);
-		
-		for(Entry<String, ItemStack> entry : mappings.getMappings().entrySet())
-		{
-			ModContainer mod = Utilities.findOwningMod(entry.getValue());
-			log.info(String.format("%s will be simplified to %s[%s][%d:%d]", entry.getKey(), Utilities.getSafeDisplayName(entry.getValue()), (mod != null ? mod.getName() : "Unknown"), entry.getValue().itemID, entry.getValue().getItemDamage()));
-		}
-
-		ProcessorManager manager = new ProcessorManager();
 		manager.registerProcessor(new CraftingProcessor());
 		manager.registerProcessor(new SmeltingProcessor());
 		
@@ -117,32 +144,102 @@ public class ModForgeUnifier
 		manager.registerModProcessor("GregTech_Addon", PlateBenderProcessor.class);
 		manager.registerModProcessor("GregTech_Addon", VacuumFreezerProcessor.class);
 		manager.registerModProcessor("GregTech_Addon", WiremillProcessor.class);
-		
-		log.info("Starting re-mapping of items");
-		manager.execute(mappings);
-		log.info("Finished re-mapping of items");
-		
-//		CraftingRecipes.remapCrafting(mappings);
-//		SmeltingRecipes.remapSmelting(mappings);
-//		ChestLoot.remapLoot(mappings);
-//		
-//		// Do mod remapping
-//		
-//		event.buildSoftDependProxy("ThermalExpansion|Factory", ThermalExpansionRemapper.class.getName());
-//		event.buildSoftDependProxy("Railcraft", RailcraftRemapper.class.getName());
-//		event.buildSoftDependProxy("factorization", FactorizationRemapper.class.getName());
-//		event.buildSoftDependProxy("IC2", IC2Remapper.class.getName());
-//		event.buildSoftDependProxy("Forestry", ForestryRemapper.class.getName());
-//		event.buildSoftDependProxy("Thaumcraft", ThaumcraftRemapper.class.getName());
-//		event.buildSoftDependProxy("RedPowerCore", RP2Remapper.class.getName());
 	}
 	
 	@ServerStarting
 	public void onServerStarting(FMLServerStartingEvent event)
 	{
-		if(event.getServer().isSinglePlayer())
-			event.registerServerCommand(new CommandUnifier());
+		MinecraftServer server = event.getServer();
+		
+		File folder = null;
+		if(server.isDedicatedServer())
+			folder = server.getFile(server.worldServers[0].getSaveHandler().getWorldDirectoryName());
+		else
+			folder = server.getFile("saves/" + server.getFolderName());
+
+		File path = new File(folder, "ForgeUnifier.dat");
+		
+		mappings = new Mappings();
+		
+		if(path.exists())
+		{
+			try
+			{
+				FileInputStream stream = new FileInputStream(path);
+				NBTTagCompound root = CompressedStreamTools.readCompressed(stream);
+				mappings.read(root);
+				stream.close();
+			}
+			catch(IOException e)
+			{
+				throw new RuntimeException(e);
+			}
+			
+			manager.execute(mappings);
+		}
+		
+		event.registerServerCommand(new CommandUnifier());
 	}
 	
+	@ServerStopping
+	public void onServerStopping(FMLServerStoppingEvent event)
+	{
+	}
+	
+	public static void saveMappings()
+	{
+		MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+		
+		File folder = null;
+		if(server.isDedicatedServer())
+			folder = server.getFile(server.worldServers[0].getSaveHandler().getWorldDirectoryName());
+		else
+			folder = server.getFile("saves/" + server.getFolderName());
+
+		File path = new File(folder, "ForgeUnifier.dat");
+		
+		try
+		{
+			FileOutputStream stream = new FileOutputStream(path);
+			NBTTagCompound root = new NBTTagCompound();
+			mappings.write(root);
+			
+			CompressedStreamTools.writeCompressed(root, stream);
+			stream.close();
+		}
+		catch(IOException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public boolean onPacketArrive( ModPacket packet, Player sender )
+	{
+		if(packet instanceof ModPacketOpenGui && FMLCommonHandler.instance().getSide() == Side.CLIENT)
+			openGui(null);
+		else if(packet instanceof ModPacketChangeMapping)
+		{
+			if(FMLCommonHandler.instance().getSide() == Side.SERVER)
+			{
+				mappings.beingModify();
+				for(Entry<String, ItemStack> entry : ((ModPacketChangeMapping) packet).newMappings.entrySet())
+					mappings.changeMapping(entry.getKey(), entry.getValue());
+				mappings.endModify();
+			}
+		}
+		else
+			return false;
+		
+		return true;
+	}
+	
+	public static void openGui(EntityPlayer player)
+	{
+		if(FMLCommonHandler.instance().getSide() == Side.CLIENT)
+			FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings());
+		else
+			packetHandler.sendPacketToClient(new ModPacketOpenGui(true), player);
+	}
 	
 }
