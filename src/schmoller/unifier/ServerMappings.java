@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import cpw.mods.fml.common.network.Player;
 import schmoller.unifier.packets.ModPacketChangeMapping;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,6 +27,16 @@ public class ServerMappings extends Mappings
 	@Override
 	public void applyChanges( ModPacketChangeMapping changes, Player sender )
 	{
+		// Check permissions
+		if(sender instanceof EntityPlayer)
+		{
+			if(!ModForgeUnifier.canPlayerEdit((EntityPlayer)sender))
+			{
+				ModForgeUnifier.packetHandler.sendPacketToClient(asPacket(), (EntityPlayer)sender);
+				return;
+			}
+		}
+		
 		super.applyChanges(changes, sender);
 		
 		if(Utilities.isServer())

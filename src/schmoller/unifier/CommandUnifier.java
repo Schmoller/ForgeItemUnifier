@@ -34,7 +34,7 @@ public class CommandUnifier extends CommandBase
 	{
 		EntityPlayer player = (EntityPlayer)sender;
 		
-		ModForgeUnifier.openGui(player);
+		ModForgeUnifier.openGui(player, ModForgeUnifier.canPlayerEdit(player));
 	}
 	
 	

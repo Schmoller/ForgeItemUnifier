@@ -186,7 +186,7 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 	public boolean onPacketArrive( ModPacket packet, Player sender )
 	{
 		if(packet instanceof ModPacketOpenGui && FMLCommonHandler.instance().getSide() == Side.CLIENT)
-			openGui(null);
+			openGui(null, ((ModPacketOpenGui)packet).allowEdit);
 		else if(packet instanceof ModPacketChangeMapping)
 		{
 			mappings.applyChanges((ModPacketChangeMapping)packet, sender);
@@ -197,21 +197,21 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 		return true;
 	}
 	
-	public static void openGui(EntityPlayer player)
+	public static void openGui(EntityPlayer player, boolean edit)
 	{
 		if(Utilities.isClient() && Utilities.isServer())
 		{
 			if(player.equals(Minecraft.getMinecraft().thePlayer))
-				FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings(false));
+				FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings(edit));
 			else
 				packetHandler.sendPacketToClient(new ModPacketOpenGui(true), player);
 		}
 		else
 		{
 			if(player == null)
-				FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings(false));
+				FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings(edit));
 			else if(Utilities.isServer())
-				packetHandler.sendPacketToClient(new ModPacketOpenGui(true), player);
+				packetHandler.sendPacketToClient(new ModPacketOpenGui(edit), player);
 		}
 	}
 
@@ -245,4 +245,9 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 
 	@Override
 	public void clientLoggedIn( NetHandler clientHandler, INetworkManager manager, Packet1Login login ) {}
+	
+	public static boolean canPlayerEdit(EntityPlayer player)
+	{
+		return (FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().areCommandsAllowed(player.username));
+	}
 }
