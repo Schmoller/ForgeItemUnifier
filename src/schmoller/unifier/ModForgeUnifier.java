@@ -20,6 +20,7 @@ import schmoller.unifier.packets.ModPacketChangeMapping;
 import schmoller.unifier.packets.ModPacketOpenGui;
 import schmoller.unifier.vanilla.*;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.NetLoginHandler;
@@ -197,20 +198,20 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 	
 	public static void openGui(EntityPlayer player)
 	{
-		if(player == null)
-			FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings());
-//		else if(FMLCommonHandler.instance().getSide() == Side.CLIENT)
-//		{
-//			// Integrated server
-//			if(FMLClientHandler.instance().getClient().thePlayer == player)
-//				FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings());
-//			else
-//			{
-//				// Well shit, this is rather annoying
-//			}
-//		}
+		if(Utilities.isClient() && Utilities.isServer())
+		{
+			if(player.equals(Minecraft.getMinecraft().thePlayer))
+				FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings());
+			else
+				packetHandler.sendPacketToClient(new ModPacketOpenGui(true), player);
+		}
 		else
-			packetHandler.sendPacketToClient(new ModPacketOpenGui(true), player);
+		{
+			if(player == null)
+				FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings());
+			else if(Utilities.isServer())
+				packetHandler.sendPacketToClient(new ModPacketOpenGui(true), player);
+		}
 	}
 
 	@Override
@@ -248,5 +249,4 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 	{
 		
 	}
-	
 }

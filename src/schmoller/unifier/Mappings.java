@@ -176,7 +176,7 @@ public class Mappings
 				mMappings.put(entry.getKey(), entry.getValue());
 		}
 		
-		if(!Utilities.canAccessServerSide())
+		if(!Utilities.isServer())
 		{
 			ModPacketChangeMapping mappings = new ModPacketChangeMapping();
 			mappings.newMappings = (Map<String, ItemStack>) mPendingMappings.clone();
@@ -185,6 +185,10 @@ public class Mappings
 		}
 		else
 		{
+			ModPacketChangeMapping mappings = new ModPacketChangeMapping();
+			mappings.newMappings = (Map<String, ItemStack>) mPendingMappings.clone();
+			ModForgeUnifier.packetHandler.sendPacketToAllClients(mappings);
+			
 			try
 			{
 				save();

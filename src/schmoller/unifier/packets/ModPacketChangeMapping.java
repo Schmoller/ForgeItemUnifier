@@ -10,17 +10,14 @@ import java.util.Map.Entry;
 import net.minecraft.item.ItemStack;
 
 import schmoller.network.ModPacket;
-import schmoller.network.NonReturnable;
 
-public class ModPacketChangeMapping extends ModPacket implements NonReturnable
+public class ModPacketChangeMapping extends ModPacket
 {
 	public Map<String, ItemStack> newMappings;
-	private int mId = -1;
 	
 	@Override
 	public void write( DataOutput output ) throws IOException
 	{
-		output.writeInt(mId);
 		output.writeInt(newMappings.size());
 		for(Entry<String, ItemStack> entry : newMappings.entrySet())
 		{
@@ -33,7 +30,6 @@ public class ModPacketChangeMapping extends ModPacket implements NonReturnable
 	@Override
 	public void read( DataInput input ) throws IOException
 	{
-		mId = input.readInt();
 		newMappings = new HashMap<String, ItemStack>();
 		int toRead = input.readInt();
 		
@@ -50,17 +46,4 @@ public class ModPacketChangeMapping extends ModPacket implements NonReturnable
 			--toRead;
 		}
 	}
-
-	@Override
-	public void setId( int id )
-	{
-		mId = id;
-	}
-
-	@Override
-	public int getId()
-	{
-		return mId;
-	}
-
 }

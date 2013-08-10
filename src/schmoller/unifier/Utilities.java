@@ -128,11 +128,16 @@ public class Utilities
 		}
 	}
 	
-	public static boolean canAccessServerSide()
+	public static boolean isServer()
 	{
 		if(FMLCommonHandler.instance().getSide() == Side.SERVER)
 			return true;
 		
 		return FMLCommonHandler.instance().getMinecraftServerInstance() != null;
+	}
+	
+	public static boolean isClient()
+	{
+		return FMLCommonHandler.instance().getSide() == Side.CLIENT;
 	}
 }

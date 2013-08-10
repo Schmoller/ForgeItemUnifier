@@ -12,38 +12,30 @@ public class ClientPacketManager extends PacketManager
 	@Override
 	public void sendPacketToServer(ModPacket packet)
 	{
-		if(!canSendPacket(packet))
-			return;
 		PacketDispatcher.sendPacketToServer(toPacket(packet));
 	}
 	
 	@Override
 	public void sendPacketToAllClients( ModPacket packet )
 	{
-		if(!canSendPacket(packet))
-			return;
 		// Integrated server
-		if(Utilities.canAccessServerSide())
+		if(Utilities.isServer())
 			PacketDispatcher.sendPacketToAllPlayers(toPacket(packet));
 	}
 	
 	@Override
 	public void sendPacketToClient( ModPacket packet, EntityPlayer player )
 	{
-		if(!canSendPacket(packet))
-			return;
 		// Integrated server
-		if(Utilities.canAccessServerSide())
+		if(Utilities.isServer())
 			PacketDispatcher.sendPacketToPlayer(toPacket(packet), (Player)player);
 	}
 	
 	@Override
 	public void sendPacketToWorld( ModPacket packet, World world )
 	{
-		if(!canSendPacket(packet))
-			return;
 		// Integrated server
-		if(Utilities.canAccessServerSide())
+		if(Utilities.isServer())
 			PacketDispatcher.sendPacketToAllInDimension(toPacket(packet), world.getWorldInfo().getDimension());
 	}
 }

@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import schmoller.unifier.Utilities;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
@@ -33,9 +36,11 @@ public class PacketManager implements IPacketHandler
 
 	private static HashMap<IModPacketHandler, Class<? extends ModPacket>[]> mHandlerFilters = new HashMap<IModPacketHandler, Class<? extends ModPacket>[]>();
 	private static HashSet<IModPacketHandler> mHandlers = new HashSet<IModPacketHandler>();
-	
-	// TODO: Make this empty out
-	protected HashSet<Integer> mSentIds = new HashSet<Integer>();
+
+	public PacketManager()
+	{
+		FMLLog.info("PacketManager: %s", getClass().getSimpleName());
+	}
 	
 	public static int registerPacket(Class<? extends ModPacket> type)
 	{
@@ -103,43 +108,20 @@ public class PacketManager implements IPacketHandler
 		return finalPacket;
 	}
 	
-	protected boolean canSendPacket(ModPacket packet)
-	{
-		if(packet instanceof NonReturnable)
-		{
-			if(((NonReturnable)packet).getId() == -1)
-			{
-				int id = (int)(System.currentTimeMillis() & 0xffffffff);
-				((NonReturnable)packet).setId(id);
-				mSentIds.add(id);
-			}
-			else if(mSentIds.contains(((NonReturnable)packet).getId()))
-				return false;
-		}
-		
-		return true;
-	}
-	
 	public void sendPacketToServer(ModPacket packet) {}
 
 	public void sendPacketToClient(ModPacket packet, EntityPlayer player) 
 	{
-		if(!canSendPacket(packet))
-			return;
 		PacketDispatcher.sendPacketToPlayer(toPacket(packet), (Player)player);
 	}
 	
 	public void sendPacketToAllClients(ModPacket packet) 
 	{
-		if(!canSendPacket(packet))
-			return;
 		PacketDispatcher.sendPacketToAllPlayers(toPacket(packet));
 	}
 	
 	public void sendPacketToWorld(ModPacket packet, World world) 
 	{
-		if(!canSendPacket(packet))
-			return;
 		PacketDispatcher.sendPacketToAllInDimension(toPacket(packet), world.getWorldInfo().getDimension());
 	}
 	
@@ -178,6 +160,12 @@ public class PacketManager implements IPacketHandler
 	@Override
 	public void onPacketData( INetworkManager manager,	Packet250CustomPayload packet, Player player )
 	{
+		// Integrated server
+		if(Utilities.isClient() && Utilities.isServer())
+		{
+			if(player == Minecraft.getMinecraft().thePlayer)
+				return;
+		}
 		ByteArrayInputStream stream = new ByteArrayInputStream(packet.data);
 		DataInputStream input = new DataInputStream(stream);
 		
@@ -195,13 +183,7 @@ public class PacketManager implements IPacketHandler
 			}
 			
 			modPacket.read(input);
-			
-			if(packet instanceof NonReturnable)
-			{
-				if(mSentIds.contains(((NonReturnable)packet).getId()))
-					return;
-			}
-			
+
 			// Send to handlers
 			Iterator<IModPacketHandler> it = mHandlers.iterator();
 			

@@ -28,7 +28,7 @@ public class ServerMappings extends Mappings
 	{
 		super.applyChanges(changes, sender);
 		
-		if(Utilities.canAccessServerSide())
+		if(Utilities.isServer())
 		{
 			ModForgeUnifier.packetHandler.sendPacketToAllClients(changes);
 		}
