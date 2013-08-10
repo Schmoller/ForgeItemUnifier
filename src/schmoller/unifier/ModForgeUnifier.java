@@ -179,6 +179,7 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 	@ServerStopping
 	public void onServerStopping(FMLServerStoppingEvent event)
 	{
+		mappings.restoreOriginals();
 	}
 	
 	@Override
@@ -201,14 +202,14 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 		if(Utilities.isClient() && Utilities.isServer())
 		{
 			if(player.equals(Minecraft.getMinecraft().thePlayer))
-				FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings());
+				FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings(false));
 			else
 				packetHandler.sendPacketToClient(new ModPacketOpenGui(true), player);
 		}
 		else
 		{
 			if(player == null)
-				FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings());
+				FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings(false));
 			else if(Utilities.isServer())
 				packetHandler.sendPacketToClient(new ModPacketOpenGui(true), player);
 		}
@@ -219,7 +220,6 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 	{
 		ModPacketChangeMapping packet = mappings.asPacket();
 		packetHandler.sendPacketToClient(packet, (EntityPlayer)player);
-		log.info("player joined");
 	}
 
 	@Override
@@ -230,23 +230,19 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 	{
 		// Prepare for connection to server
 		mappings = new Mappings();
-		log.info("Joining remote server " + server);
 	}
 
 	@Override
-	public void connectionOpened( NetHandler netClientHandler, MinecraftServer server, INetworkManager manager ) 
+	public void connectionOpened( NetHandler netClientHandler, MinecraftServer server, INetworkManager manager ) {}
+
+	@Override
+	public void connectionClosed( INetworkManager manager ) 
 	{
-		// Prepare for connection to integrated server
-//		mappings = new Mappings();
-		log.info("joining integrated server");
+		// Disconnect from server, restore defaults
+		if(!Utilities.isServer())
+			mappings.restoreOriginals();
 	}
 
 	@Override
-	public void connectionClosed( INetworkManager manager ) {}
-
-	@Override
-	public void clientLoggedIn( NetHandler clientHandler, INetworkManager manager, Packet1Login login ) 
-	{
-		
-	}
+	public void clientLoggedIn( NetHandler clientHandler, INetworkManager manager, Packet1Login login ) {}
 }

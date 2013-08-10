@@ -36,18 +36,23 @@ public class GuiUnifierSettings extends GuiScreen
 	private long mLastClickTime = 0;
 	private int mLastClicked = -1; 
 	private boolean mHasClicked = false;
+	
+	private boolean mEditable = true;
 
 	public static final ItemStack unknownItem = new ItemStack(Block.bedrock);
 	
-	public GuiUnifierSettings()
+	public GuiUnifierSettings(boolean editable)
 	{
-		ModForgeUnifier.mappings.beingModify();
+		mEditable = editable;
+		if(mEditable)
+			ModForgeUnifier.mappings.beingModify();
 	}
 	
 	@Override
 	public void onGuiClosed()
 	{
-		ModForgeUnifier.mappings.endModify();
+		if(mEditable)
+			ModForgeUnifier.mappings.endModify();
 	}
 	
 	@Override
@@ -77,7 +82,6 @@ public class GuiUnifierSettings extends GuiScreen
 	{
 		mOreList = new GuiOreList(this, 20, 60, width / 2 - 20, height - 90, ModForgeUnifier.mappings, category);
 		mLastClicked = -1;
-		//mOreList.registerScrollButtons(buttonList, 300,301);
 	}
 	
 	Minecraft getMC()
@@ -261,85 +265,88 @@ public class GuiUnifierSettings extends GuiScreen
 					drawString(this.fontRenderer, EnumChatFormatting.YELLOW + "Unknown", (int)((width + 130) / 2), 91, 0xffffff);
 				}
 				
-				drawString(this.fontRenderer, "Available Choices:", (int)((width + 10) / 2), 110, 0xffffff);
-				
-				int xx = ((width + 10) / 2);
-				int yy = 125;
-				
-				int index = 0;
-				
+				if(mEditable)
 				{
-					if(mouseX >= xx-1 && mouseX < xx + 17 && mouseY >= yy-1 && mouseY < yy + 17)
+					drawString(this.fontRenderer, "Available Choices:", (int)((width + 10) / 2), 110, 0xffffff);
+					
+					int xx = ((width + 10) / 2);
+					int yy = 125;
+					
+					int index = 0;
+					
 					{
-						hoverItem = unknownItem;
-						drawRect(xx-1, yy-1, xx + 17, yy + 17, -2130706433);
-						
-						if(Mouse.isButtonDown(0) && !mHasClicked)
+						if(mouseX >= xx-1 && mouseX < xx + 17 && mouseY >= yy-1 && mouseY < yy + 17)
 						{
-							boolean doubleClick = (index == mLastClicked && System.currentTimeMillis() - mLastClickTime < 250L);
+							hoverItem = unknownItem;
+							drawRect(xx-1, yy-1, xx + 17, yy + 17, -2130706433);
 							
-							mHasClicked = true;
-
-							if (doubleClick)
+							if(Mouse.isButtonDown(0) && !mHasClicked)
 							{
-								// Select it
+								boolean doubleClick = (index == mLastClicked && System.currentTimeMillis() - mLastClickTime < 250L);
 								
-								ModForgeUnifier.mappings.changeMapping(selected.getKey(), new ItemStack(0, 0, 0));
+								mHasClicked = true;
+	
+								if (doubleClick)
+								{
+									// Select it
+									
+									ModForgeUnifier.mappings.changeMapping(selected.getKey(), new ItemStack(0, 0, 0));
+								}
+								
+								mLastClickTime = System.currentTimeMillis();
+								mLastClicked = index;
 							}
-							
-							mLastClickTime = System.currentTimeMillis();
-							mLastClicked = index;
 						}
-					}
-					
-					drawItemStack(unknownItem, xx, yy);
-					
-					xx += 18;
-					
-					if(xx + 18 >= width - 20)
-					{
-						xx = ((width + 10) / 2);
-						yy += 18;
-					}
-					
-					++index;
-				}
-				
-				for(ItemStack option : selected.getValue())
-				{
-					if(mouseX >= xx-1 && mouseX < xx + 17 && mouseY >= yy-1 && mouseY < yy + 17)
-					{
-						hoverItem = option;
-						drawRect(xx-1, yy-1, xx + 17, yy + 17, -2130706433);
 						
-						if(Mouse.isButtonDown(0) && !mHasClicked)
+						drawItemStack(unknownItem, xx, yy);
+						
+						xx += 18;
+						
+						if(xx + 18 >= width - 20)
 						{
-							boolean doubleClick = (index == mLastClicked && System.currentTimeMillis() - mLastClickTime < 250L);
-							
-							mHasClicked = true;
-
-							if (doubleClick)
-							{
-								// Select it
-								ModForgeUnifier.mappings.changeMapping(selected.getKey(), option);
-							}
-							
-							mLastClickTime = System.currentTimeMillis();
-							mLastClicked = index;
+							xx = ((width + 10) / 2);
+							yy += 18;
 						}
+						
+						++index;
 					}
 					
-					drawItemStack(option, xx, yy);
-					
-					xx += 18;
-					
-					if(xx + 18 >= width - 20)
+					for(ItemStack option : selected.getValue())
 					{
-						xx = ((width + 10) / 2);
-						yy += 18;
+						if(mouseX >= xx-1 && mouseX < xx + 17 && mouseY >= yy-1 && mouseY < yy + 17)
+						{
+							hoverItem = option;
+							drawRect(xx-1, yy-1, xx + 17, yy + 17, -2130706433);
+							
+							if(Mouse.isButtonDown(0) && !mHasClicked)
+							{
+								boolean doubleClick = (index == mLastClicked && System.currentTimeMillis() - mLastClickTime < 250L);
+								
+								mHasClicked = true;
+	
+								if (doubleClick)
+								{
+									// Select it
+									ModForgeUnifier.mappings.changeMapping(selected.getKey(), option);
+								}
+								
+								mLastClickTime = System.currentTimeMillis();
+								mLastClicked = index;
+							}
+						}
+						
+						drawItemStack(option, xx, yy);
+						
+						xx += 18;
+						
+						if(xx + 18 >= width - 20)
+						{
+							xx = ((width + 10) / 2);
+							yy += 18;
+						}
+						
+						++index;
 					}
-					
-					++index;
 				}
 			}
 			else

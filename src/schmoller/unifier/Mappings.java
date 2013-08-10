@@ -217,6 +217,17 @@ public class Mappings
 		ModForgeUnifier.manager.execute(this);
 	}
 	
+	public void restoreOriginals()
+	{
+		ItemStack blank = new ItemStack(0,0,0);
+		for(Entry<String, ItemStack> mapping : mMappings.entrySet())
+			mapping.setValue(blank);
+
+		ModForgeUnifier.manager.execute(this);
+		
+		mMappings.clear();
+	}
+	
 	public ModPacketChangeMapping asPacket()
 	{
 		ModPacketChangeMapping packet = new ModPacketChangeMapping();
