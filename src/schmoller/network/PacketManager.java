@@ -34,6 +34,9 @@ public class PacketManager implements IPacketHandler
 	private static HashMap<IModPacketHandler, Class<? extends ModPacket>[]> mHandlerFilters = new HashMap<IModPacketHandler, Class<? extends ModPacket>[]>();
 	private static HashSet<IModPacketHandler> mHandlers = new HashSet<IModPacketHandler>();
 	
+	// TODO: Make this empty out
+	protected HashSet<Integer> mSentIds = new HashSet<Integer>();
+	
 	public static int registerPacket(Class<? extends ModPacket> type)
 	{
 		if(mTypeMap.containsKey(type))
@@ -100,21 +103,43 @@ public class PacketManager implements IPacketHandler
 		return finalPacket;
 	}
 	
+	protected boolean canSendPacket(ModPacket packet)
+	{
+		if(packet instanceof NonReturnable)
+		{
+			if(((NonReturnable)packet).getId() == -1)
+			{
+				int id = (int)(System.currentTimeMillis() & 0xffffffff);
+				((NonReturnable)packet).setId(id);
+				mSentIds.add(id);
+			}
+			else if(mSentIds.contains(((NonReturnable)packet).getId()))
+				return false;
+		}
+		
+		return true;
+	}
 	
 	public void sendPacketToServer(ModPacket packet) {}
 
 	public void sendPacketToClient(ModPacket packet, EntityPlayer player) 
 	{
+		if(!canSendPacket(packet))
+			return;
 		PacketDispatcher.sendPacketToPlayer(toPacket(packet), (Player)player);
 	}
 	
 	public void sendPacketToAllClients(ModPacket packet) 
 	{
+		if(!canSendPacket(packet))
+			return;
 		PacketDispatcher.sendPacketToAllPlayers(toPacket(packet));
 	}
 	
 	public void sendPacketToWorld(ModPacket packet, World world) 
 	{
+		if(!canSendPacket(packet))
+			return;
 		PacketDispatcher.sendPacketToAllInDimension(toPacket(packet), world.getWorldInfo().getDimension());
 	}
 	
@@ -170,6 +195,12 @@ public class PacketManager implements IPacketHandler
 			}
 			
 			modPacket.read(input);
+			
+			if(packet instanceof NonReturnable)
+			{
+				if(mSentIds.contains(((NonReturnable)packet).getId()))
+					return;
+			}
 			
 			// Send to handlers
 			Iterator<IModPacketHandler> it = mHandlers.iterator();

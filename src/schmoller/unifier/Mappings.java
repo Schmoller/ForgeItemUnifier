@@ -1,27 +1,27 @@
 package schmoller.unifier;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import cpw.mods.fml.common.network.Player;
+
 import schmoller.unifier.packets.ModPacketChangeMapping;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class Mappings
 {
 	private IdentityHashMap<ItemStack, ItemStack> mOriginals = new IdentityHashMap<ItemStack, ItemStack>();
 	
-	private HashMap<String, ItemStack> mMappings = new HashMap<String, ItemStack>();
+	protected HashMap<String, ItemStack> mMappings = new HashMap<String, ItemStack>();
 	private HashMap<String, ItemStack> mPendingMappings = null;
 	
 	// All entries never allowed to be simplified
@@ -157,62 +157,9 @@ public class Mappings
 		return false;
 	}
 	
-	public void write(NBTTagCompound root)
-	{
-		NBTTagList map = new NBTTagList();
-		for(Entry<String, ItemStack> entry : mMappings.entrySet())
-		{
-			NBTTagCompound tag = new NBTTagCompound();
-			tag.setString("name", entry.getKey());
-			tag.setInteger("id", entry.getValue().itemID);
-			tag.setInteger("data", entry.getValue().getItemDamage());
-			map.appendTag(tag);
-		}
-		
-		root.setTag("mappings", map);
-	}
+	public void save() throws IOException {}
 	
-	public void read(NBTTagCompound root)
-	{
-		mMappings.clear();
-		
-		NBTTagList map = root.getTagList("mappings");
-		
-		for(int i = 0; i < map.tagCount(); ++i)
-		{
-			NBTTagCompound tag = (NBTTagCompound)map.tagAt(i);
-			
-			String name = tag.getString("name");
-			
-			int id = tag.getInteger("id");
-			int data = tag.getInteger("data");
-			
-			ItemStack item = new ItemStack(id, 1, data);
-			
-			if(item.getItem() == null)
-			{
-				ModForgeUnifier.log.severe(String.format("Unknown item [%d:%d] used for %s. Ignoring", id, data, name));
-				continue;
-			}
-			
-			int oreId = OreDictionary.getOreID(item);
-			
-			if(oreId == -1)
-			{
-				ModForgeUnifier.log.severe(String.format("Item [%d:%d] used for %s is not in the ore dictionary. Ignoring", id, data, name));
-				continue;
-			}
-			
-			String oreName = OreDictionary.getOreName(oreId);
-			if(!name.equalsIgnoreCase(oreName))
-			{
-				ModForgeUnifier.log.severe(String.format("Item [%d:%d] used for %s has the ore type %s. Ignoring", id, data, name, oreName));
-				continue;
-			}
-			
-			mMappings.put(name, item);
-		}
-	}
+	public void load() throws IOException {}
 	
 	public void beingModify()
 	{
@@ -229,20 +176,48 @@ public class Mappings
 				mMappings.put(entry.getKey(), entry.getValue());
 		}
 		
-		if(!FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && FMLCommonHandler.instance().getSide() == Side.CLIENT)
+		if(!Utilities.canAccessServerSide())
 		{
 			ModPacketChangeMapping mappings = new ModPacketChangeMapping();
-			mappings.newMappings = (HashMap<String, ItemStack>) mPendingMappings.clone();
+			mappings.newMappings = (Map<String, ItemStack>) mPendingMappings.clone();
 			
 			ModForgeUnifier.packetHandler.sendPacketToServer(mappings);
 		}
 		else
 		{
-			ModForgeUnifier.saveMappings();
+			try
+			{
+				save();
+			}
+			catch(IOException e)
+			{
+				e.printStackTrace();
+			}
 		}
 		
 		ModForgeUnifier.manager.execute(this);
 		
 		mPendingMappings = null;
+	}
+	
+	public void applyChanges(ModPacketChangeMapping changes, Player sender)
+	{
+		for(Entry<String, ItemStack> entry : changes.newMappings.entrySet())
+		{
+			if(entry.getValue().itemID == 0)
+				mMappings.remove(entry.getKey());
+			else
+				mMappings.put(entry.getKey(), entry.getValue());
+		}
+		
+		ModForgeUnifier.manager.execute(this);
+	}
+	
+	public ModPacketChangeMapping asPacket()
+	{
+		ModPacketChangeMapping packet = new ModPacketChangeMapping();
+		packet.newMappings = mMappings;
+		
+		return packet;
 	}
 }

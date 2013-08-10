@@ -1,10 +1,7 @@
 package schmoller.unifier;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import schmoller.network.IModPacketHandler;
@@ -24,9 +21,10 @@ import schmoller.unifier.packets.ModPacketOpenGui;
 import schmoller.unifier.vanilla.*;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.INetworkManager;
+import net.minecraft.network.NetLoginHandler;
+import net.minecraft.network.packet.NetHandler;
+import net.minecraft.network.packet.Packet1Login;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.Configuration;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -40,13 +38,15 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import cpw.mods.fml.common.network.IConnectionHandler;
 import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 
 @Mod(name="Forge Unifier", modid="ForgeUnifier", version="##FUVersion##", dependencies="after:*")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
-public class ModForgeUnifier implements IModPacketHandler
+public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 {
 	public static Logger log;
 	public static Mappings mappings = null;
@@ -78,6 +78,8 @@ public class ModForgeUnifier implements IModPacketHandler
 		
 		packetHandler.registerPacket(ModPacketOpenGui.class);
 		packetHandler.registerPacket(ModPacketChangeMapping.class);
+		
+		NetworkRegistry.instance().registerConnectionHandler(this);
 	}
 	
 	@PostInit
@@ -159,23 +161,15 @@ public class ModForgeUnifier implements IModPacketHandler
 
 		File path = new File(folder, "ForgeUnifier.dat");
 		
-		mappings = new Mappings();
-		
-		if(path.exists())
+		mappings = new ServerMappings(path);
+		try
 		{
-			try
-			{
-				FileInputStream stream = new FileInputStream(path);
-				NBTTagCompound root = CompressedStreamTools.readCompressed(stream);
-				mappings.read(root);
-				stream.close();
-			}
-			catch(IOException e)
-			{
-				throw new RuntimeException(e);
-			}
-			
+			mappings.load();
 			manager.execute(mappings);
+		}
+		catch(IOException e)
+		{
+			throw new RuntimeException(e);
 		}
 		
 		event.registerServerCommand(new CommandUnifier());
@@ -186,33 +180,6 @@ public class ModForgeUnifier implements IModPacketHandler
 	{
 	}
 	
-	public static void saveMappings()
-	{
-		MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-		
-		File folder = null;
-		if(server.isDedicatedServer())
-			folder = server.getFile(server.worldServers[0].getSaveHandler().getWorldDirectoryName());
-		else
-			folder = server.getFile("saves/" + server.getFolderName());
-
-		File path = new File(folder, "ForgeUnifier.dat");
-		
-		try
-		{
-			FileOutputStream stream = new FileOutputStream(path);
-			NBTTagCompound root = new NBTTagCompound();
-			mappings.write(root);
-			
-			CompressedStreamTools.writeCompressed(root, stream);
-			stream.close();
-		}
-		catch(IOException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
 	@Override
 	public boolean onPacketArrive( ModPacket packet, Player sender )
 	{
@@ -220,10 +187,7 @@ public class ModForgeUnifier implements IModPacketHandler
 			openGui(null);
 		else if(packet instanceof ModPacketChangeMapping)
 		{
-			mappings.beingModify();
-			for(Entry<String, ItemStack> entry : ((ModPacketChangeMapping) packet).newMappings.entrySet())
-				mappings.changeMapping(entry.getKey(), entry.getValue());
-			mappings.endModify();
+			mappings.applyChanges((ModPacketChangeMapping)packet, sender);
 		}
 		else
 			return false;
@@ -233,10 +197,56 @@ public class ModForgeUnifier implements IModPacketHandler
 	
 	public static void openGui(EntityPlayer player)
 	{
-		if(FMLCommonHandler.instance().getSide() == Side.CLIENT)
+		if(player == null)
 			FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings());
+//		else if(FMLCommonHandler.instance().getSide() == Side.CLIENT)
+//		{
+//			// Integrated server
+//			if(FMLClientHandler.instance().getClient().thePlayer == player)
+//				FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings());
+//			else
+//			{
+//				// Well shit, this is rather annoying
+//			}
+//		}
 		else
 			packetHandler.sendPacketToClient(new ModPacketOpenGui(true), player);
+	}
+
+	@Override
+	public void playerLoggedIn( Player player, NetHandler netHandler, INetworkManager manager )
+	{
+		ModPacketChangeMapping packet = mappings.asPacket();
+		packetHandler.sendPacketToClient(packet, (EntityPlayer)player);
+		log.info("player joined");
+	}
+
+	@Override
+	public String connectionReceived( NetLoginHandler netHandler, INetworkManager manager )	{ return null; }
+
+	@Override
+	public void connectionOpened( NetHandler netClientHandler, String server, int port, INetworkManager manager ) 
+	{
+		// Prepare for connection to server
+		mappings = new Mappings();
+		log.info("Joining remote server " + server);
+	}
+
+	@Override
+	public void connectionOpened( NetHandler netClientHandler, MinecraftServer server, INetworkManager manager ) 
+	{
+		// Prepare for connection to integrated server
+//		mappings = new Mappings();
+		log.info("joining integrated server");
+	}
+
+	@Override
+	public void connectionClosed( INetworkManager manager ) {}
+
+	@Override
+	public void clientLoggedIn( NetHandler clientHandler, INetworkManager manager, Packet1Login login ) 
+	{
+		
 	}
 	
 }

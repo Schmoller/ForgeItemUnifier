@@ -4,11 +4,13 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 import net.minecraft.item.ItemStack;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.ItemData;
 import cpw.mods.fml.common.registry.LanguageRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 public class Utilities
 {
@@ -124,5 +126,13 @@ public class Utilities
 		{
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public static boolean canAccessServerSide()
+	{
+		if(FMLCommonHandler.instance().getSide() == Side.SERVER)
+			return true;
+		
+		return FMLCommonHandler.instance().getMinecraftServerInstance() != null;
 	}
 }
