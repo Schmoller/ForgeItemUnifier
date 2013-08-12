@@ -21,6 +21,7 @@ import schmoller.unifier.packets.ModPacketOpenGui;
 import schmoller.unifier.vanilla.*;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.NetLoginHandler;
@@ -28,6 +29,9 @@ import net.minecraft.network.packet.NetHandler;
 import net.minecraft.network.packet.Packet1Login;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.Configuration;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
@@ -81,6 +85,7 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 		packetHandler.registerPacket(ModPacketChangeMapping.class);
 		
 		NetworkRegistry.instance().registerConnectionHandler(this);
+		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
 	@PostInit
@@ -88,6 +93,7 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 	{
 		manager.registerProcessor(new CraftingProcessor());
 		manager.registerProcessor(new SmeltingProcessor());
+		manager.registerProcessor(new VillagerTradeProcessor());
 		
 		// IC2 processors
 		manager.registerModProcessor("IC2", CompressorProcessor.class);
@@ -250,5 +256,14 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 	public static boolean canPlayerEdit(EntityPlayer player)
 	{
 		return (FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().areCommandsAllowed(player.username));
+	}
+	
+	@ForgeSubscribe
+	public void onSpawn(LivingSpawnEvent event)
+	{
+		if(event.entityLiving instanceof EntityVillager)
+		{
+			log.info("Got a villager spawn event");
+		}
 	}
 }
