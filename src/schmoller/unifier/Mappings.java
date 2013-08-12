@@ -1,6 +1,7 @@
 package schmoller.unifier;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +27,8 @@ public class Mappings
 	
 	// All entries never allowed to be simplified
 	public static List<String> mBlackList = Arrays.asList(new String[] {"logWood","plankWood","slabWood","stairWood","stickWood","treeSapling","treeLeaves", "itemRecord"});
+	
+	private static boolean mHasSafeguarded = false;
 	
 	public static Set<String> getMappableOres()
 	{
@@ -89,16 +92,6 @@ public class Mappings
 	 */
 	public void changeMapping(String oreName, ItemStack item)
 	{
-		// Check that it is allowed
-		int oreId = OreDictionary.getOreID(item);
-		
-		if(oreId != -1)
-		{
-			String name = OreDictionary.getOreName(oreId);
-			if(!oreName.equals(name))
-				throw new IllegalArgumentException("Item is not of the correct category");
-		}
-		
 		if(mPendingMappings != null)
 			mPendingMappings.put(oreName, item);
 		else
@@ -234,5 +227,30 @@ public class Mappings
 		packet.newMappings = mMappings;
 		
 		return packet;
+	}
+	
+	/**
+	 * Some mods use references of oredict objects directly, this method protects against that
+	 */
+	public static void safeGuardOreDict()
+	{
+		if(mHasSafeguarded)
+			return;
+		
+		String[] oreNames = OreDictionary.getOreNames();
+		for(String oreName : oreNames)
+		{
+			ArrayList<ItemStack> ores = OreDictionary.getOres(oreName);
+			ArrayList<ItemStack> copy = new ArrayList<ItemStack>(ores.size());
+
+			for(ItemStack ore : ores)
+				copy.add(ore.copy());
+			
+			ores.clear();
+			for(ItemStack ore : copy)
+				ores.add(ore);
+		}
+		
+		mHasSafeguarded = true;
 	}
 }

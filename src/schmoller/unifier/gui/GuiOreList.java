@@ -63,6 +63,7 @@ public class GuiOreList extends GuiScreen
 		for(String oreName : oreNames)
 		{
 			List<ItemStack> ores = OreDictionary.getOres(oreName);
+			
 			if(ores.size() > 1)
 			{
 				HashSet<ItemStack> items = new HashSet<ItemStack>();

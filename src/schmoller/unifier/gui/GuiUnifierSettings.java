@@ -43,6 +43,7 @@ public class GuiUnifierSettings extends GuiScreen
 	
 	public GuiUnifierSettings(boolean editable)
 	{
+		allowUserInput = true;
 		mEditable = editable;
 		if(mEditable)
 			ModForgeUnifier.mappings.beingModify();
@@ -74,7 +75,7 @@ public class GuiUnifierSettings extends GuiScreen
 		}
 
 		buttonList.add(new GuiButton(200, width / 2 - 100, height - 25, StringTranslate.getInstance().translateKey("gui.done")));
-		
+		//Mouse.setNativeCursor(Cursor.getDefaultCursor());
 		setOreCategory(mSelected);
 	}
 	
@@ -200,6 +201,7 @@ public class GuiUnifierSettings extends GuiScreen
 	
 	void drawItemStack(ItemStack item, int x, int y)
 	{
+		
 		renderItem.zLevel = 100;
 		renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, item, x, y);
 		renderItem.renderItemOverlayIntoGUI(fontRenderer, mc.renderEngine, item, x, y);

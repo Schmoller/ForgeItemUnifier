@@ -86,8 +86,6 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 	@PostInit
 	public void postInit(FMLPostInitializationEvent event)
 	{
-		log.info("Loading mappings:");
-		
 		manager.registerProcessor(new CraftingProcessor());
 		manager.registerProcessor(new SmeltingProcessor());
 		
@@ -162,6 +160,8 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 
 		File path = new File(folder, "ForgeUnifier.dat");
 		
+		Mappings.safeGuardOreDict();
+		
 		mappings = new ServerMappings(path);
 		try
 		{
@@ -229,6 +229,7 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 	public void connectionOpened( NetHandler netClientHandler, String server, int port, INetworkManager manager ) 
 	{
 		// Prepare for connection to server
+		Mappings.safeGuardOreDict();
 		mappings = new Mappings();
 	}
 

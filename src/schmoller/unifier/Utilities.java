@@ -36,6 +36,9 @@ public class Utilities
 		if(modId == null)
 			return null;
 
+		if(modId.equals("Minecraft"))
+			return Loader.instance().getMinecraftModContainer();
+		
 		for(ModContainer mod : Loader.instance().getActiveModList())
 		{
 			if(mod.getMod() == null)
