@@ -69,7 +69,7 @@ public class UnifierPlugin implements IFMLLoadingPlugin
 	@Override
 	public String getModContainerClass()
 	{
-		return "schmoller.unifier.asm.UnifierContainer";
+		return "schmoller.unifier.ModForgeUnifier";
 	}
 
 	@Override

@@ -238,7 +238,7 @@ public class GuiUnifierSettings extends GuiScreen
 //        tes.addVertexWithUV(0.0D, 0.0D, zLevel, 0.0D, 0.0D);
 //        tes.draw();
         
-        drawCenteredString(this.fontRenderer, "Forge Unifier Options", width / 2, 15, 0xffffff);
+        drawCenteredString(this.fontRenderer, "Forge Item Unifier Options", width / 2, 15, 0xffffff);
         
         super.drawScreen(mouseX, mouseY, par3);
         
@@ -253,6 +253,7 @@ public class GuiUnifierSettings extends GuiScreen
 				drawCenteredString(this.fontRenderer, EnumChatFormatting.GOLD + selected.getKey(), (int)(width * 0.75), 65, 0xffffff);
 
 				boolean isGlobal = false;
+				
 				ItemStack item = mMappings.getMapping(selected.getKey());
 				if(item == null && mMappings.getParent() != null)
 				{
@@ -337,13 +338,13 @@ public class GuiUnifierSettings extends GuiScreen
 								mLastClicked = index;
 							}
 						}
-//						else if(option.itemID == -1)
-//						{
-//							drawRect(xx-1, yy-1, xx + 17, yy, 0x50aaaaFF);
-//							drawRect(xx-1, yy + 16, xx + 17, yy + 17, 0x50aaaaFF);
-//							drawRect(xx-1, yy, xx, yy + 16, 0x50aaaaFF);
-//							drawRect(xx + 16, yy, xx + 17, yy + 16, 0x50aaaaFF);
-//						}
+						if((isGlobal && option.itemID == -1) || ((item == null || item.itemID == 0) && option.itemID == 0) || (item != null && option.isItemEqual(item) && !isGlobal))
+						{
+							drawRect(xx-1, yy-1, xx + 17, yy, 0x50aaaaFF);
+							drawRect(xx-1, yy + 16, xx + 17, yy + 17, 0x50aaaaFF);
+							drawRect(xx-1, yy, xx, yy + 16, 0x50aaaaFF);
+							drawRect(xx + 16, yy, xx + 17, yy + 16, 0x50aaaaFF);
+						}
 						
 						if(option.itemID == 0)
 							drawItemStack(unknownItem, xx, yy);

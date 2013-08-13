@@ -41,7 +41,7 @@
     </target>
     
     <target name="package" depends="copyExtra">
-        <jar destfile="./dist/ForgeUnifier-${mod.version}.jar" baseDir="${obf.dir}" compress="true">
+        <jar destfile="./dist/ForgeUnifier-${mod.version}.jar" baseDir="${obf.dir}" compress="true" manifest="${src.dir}/../MANIFEST.MF">
         	<include name="**schmoller/**"/>
         	<include name="**mcmod.info"/>
     	</jar>

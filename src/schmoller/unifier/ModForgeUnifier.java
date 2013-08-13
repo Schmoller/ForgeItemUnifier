@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+
+import schmoller.network.ClientPacketManager;
 import schmoller.network.IModPacketHandler;
 import schmoller.network.ModPacket;
 import schmoller.network.PacketManager;
@@ -21,7 +25,6 @@ import schmoller.unifier.packets.ModPacketOpenGui;
 import schmoller.unifier.vanilla.*;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.NetLoginHandler;
@@ -29,29 +32,24 @@ import net.minecraft.network.packet.NetHandler;
 import net.minecraft.network.packet.Packet1Login;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.Configuration;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ForgeSubscribe;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.DummyModContainer;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.Mod.*;
+import cpw.mods.fml.common.LoadController;
+import cpw.mods.fml.common.ModMetadata;
+import cpw.mods.fml.common.event.FMLConstructionEvent;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.network.IConnectionHandler;
-import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(name="Forge Unifier", modid="ForgeUnifier", version="##FUVersion##", dependencies="after:*")
-@NetworkMod(clientSideRequired = true, serverSideRequired = true)
-public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
+public class ModForgeUnifier extends DummyModContainer implements IModPacketHandler, IConnectionHandler 
 {
 	public static Logger log;
 	public static GlobalMappings globalMappings = null;
@@ -60,13 +58,37 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 	
 	private Configuration mConfig;
 	
-	@SidedProxy(clientSide="schmoller.network.ClientPacketManager", serverSide="schmoller.network.PacketManager")
 	public static PacketManager packetHandler;
 	
-	@PreInit
+	public ModForgeUnifier()
+	{
+		super(new ModMetadata());
+		ModMetadata meta = getMetadata();
+		meta.modId = "ForgeUnifier";
+		meta.name = "Forge Item Unifier";
+		meta.version = "##FUVersion##";
+	}
+	
+	@Override
+	public boolean registerBus( EventBus bus, LoadController controller )
+	{
+		bus.register(this);
+		return true;
+	}
+	
+	@Subscribe
+    public void constructMod(FMLConstructionEvent event)
+    {
+		if(event.getSide() == Side.CLIENT)
+			packetHandler = new ClientPacketManager();
+		else
+			packetHandler = new PacketManager();
+    }
+	
+	
+	@Subscribe
 	public void preInit(FMLPreInitializationEvent event)
 	{
-		FMLLog.makeLog("OreUnifier");
 		log = FMLLog.getLogger().getLogger("OreUnifier");
 		log.setUseParentHandlers(true);
 		
@@ -76,7 +98,7 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 		manager = new ProcessorManager();
 	}
 	
-	@Init
+	@Subscribe
 	public void init(FMLInitializationEvent event)
 	{
 		packetHandler.initialize("FrgUni");
@@ -86,7 +108,6 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 		packetHandler.registerPacket(ModPacketChangeMapping.class);
 		
 		NetworkRegistry.instance().registerConnectionHandler(this);
-		MinecraftForge.EVENT_BUS.register(this);
 		
 		globalMappings = new GlobalMappings(new File("ForgeUnifier.dat"));
 		try
@@ -99,7 +120,7 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 		}
 	}
 	
-	@PostInit
+	@Subscribe
 	public void postInit(FMLPostInitializationEvent event)
 	{
 		manager.registerProcessor(new CraftingProcessor());
@@ -165,7 +186,7 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 		manager.registerModProcessor("GregTech_Addon", GTUnificatorProcessor.class);
 	}
 	
-	@ServerStarting
+	@Subscribe
 	public void onServerStarting(FMLServerStartingEvent event)
 	{
 		MinecraftServer server = event.getServer();
@@ -197,7 +218,7 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 		event.registerServerCommand(new CommandUnifier());
 	}
 	
-	@ServerStopping
+	@Subscribe
 	public void onServerStopping(FMLServerStoppingEvent event)
 	{
 		mappings.restoreOriginals();
@@ -271,14 +292,5 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 	public static boolean canPlayerEdit(EntityPlayer player)
 	{
 		return (FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().areCommandsAllowed(player.username));
-	}
-	
-	@ForgeSubscribe
-	public void onSpawn(LivingSpawnEvent event)
-	{
-		if(event.entityLiving instanceof EntityVillager)
-		{
-			log.info("Got a villager spawn event");
-		}
 	}
 }
