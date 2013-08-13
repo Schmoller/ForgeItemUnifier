@@ -9,11 +9,6 @@ import cpw.mods.fml.common.FMLLog;
 
 public class UnifierHooks
 {
-	public static void testHook()
-	{
-		FMLLog.severe("Test hook has been triggered. YAY!");
-	}
-	
 	/**
 	 * Called upon initial spawn and load of villagers
 	 * @param list
@@ -26,8 +21,13 @@ public class UnifierHooks
 		FMLLog.severe("Merchant Load " + list.toString());
 	}
 	
-	public static void onMainMenuPopulate(GuiMainMenu menu)
+	/**
+	 * Called upon clicking the unifier options button in the main menu
+	 * @param menu
+	 */
+	public static void onOpenGlobalOptions(GuiMainMenu menu)
 	{
+		FMLLog.severe("Opening options");
 		
 	}
 }
