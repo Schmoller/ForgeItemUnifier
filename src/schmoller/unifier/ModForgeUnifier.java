@@ -54,7 +54,8 @@ import cpw.mods.fml.relauncher.Side;
 public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 {
 	public static Logger log;
-	public static Mappings mappings = null;
+	public static GlobalMappings globalMappings = null;
+	public static NetworkedMappings mappings = null;
 	public static ProcessorManager manager;
 	
 	private Configuration mConfig;
@@ -86,6 +87,16 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 		
 		NetworkRegistry.instance().registerConnectionHandler(this);
 		MinecraftForge.EVENT_BUS.register(this);
+		
+		globalMappings = new GlobalMappings(new File("ForgeUnifier.dat"));
+		try
+		{
+			globalMappings.load();
+		}
+		catch(IOException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 	
 	@PostInit
@@ -172,6 +183,9 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 		try
 		{
 			mappings.load();
+			if(server.isSinglePlayer())
+				mappings.setParent(globalMappings);
+			
 			manager.execute(mappings);
 		}
 		catch(IOException e)
@@ -208,14 +222,14 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 		if(Utilities.isClient() && Utilities.isServer())
 		{
 			if(player.equals(Minecraft.getMinecraft().thePlayer))
-				FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings(edit));
+				FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings(edit, mappings));
 			else
 				packetHandler.sendPacketToClient(new ModPacketOpenGui(true), player);
 		}
 		else
 		{
 			if(player == null)
-				FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings(edit));
+				FMLClientHandler.instance().showGuiScreen(new GuiUnifierSettings(edit, mappings));
 			else if(Utilities.isServer())
 				packetHandler.sendPacketToClient(new ModPacketOpenGui(edit), player);
 		}
@@ -236,7 +250,7 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 	{
 		// Prepare for connection to server
 		Mappings.safeGuardOreDict();
-		mappings = new Mappings();
+		mappings = new NetworkedMappings();
 	}
 
 	@Override

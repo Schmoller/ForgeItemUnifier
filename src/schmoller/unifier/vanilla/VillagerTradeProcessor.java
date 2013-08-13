@@ -13,7 +13,6 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import schmoller.unifier.IProcessor;
 import schmoller.unifier.Mappings;
-import schmoller.unifier.ModForgeUnifier;
 
 public class VillagerTradeProcessor implements IProcessor
 {
@@ -30,8 +29,11 @@ public class VillagerTradeProcessor implements IProcessor
 		int count = 0;
 		if(FMLCommonHandler.instance().getSide() == Side.CLIENT)
 		{
-			List<Entity> list = FMLClientHandler.instance().getClient().theWorld.loadedEntityList;
-			count += apply(mappings, list);
+			if(FMLClientHandler.instance().getClient().theWorld != null)
+			{
+				List<Entity> list = FMLClientHandler.instance().getClient().theWorld.loadedEntityList;
+				count += apply(mappings, list);
+			}
 		}
 		
 		if(FMLCommonHandler.instance().getMinecraftServerInstance() != null)
@@ -57,8 +59,17 @@ public class VillagerTradeProcessor implements IProcessor
 				
 				for(MerchantRecipe recipe : (List<MerchantRecipe>)recipes)
 				{
-					if(ModForgeUnifier.mappings.applyMapping(recipe.getItemToSell()))
+					if(mappings.applyMapping(recipe.getItemToSell()))
 						++count;
+					
+					if(mappings.applyMapping(recipe.getItemToBuy()))
+						++count;
+					
+					if(recipe.getSecondItemToBuy() != null)
+					{
+						if(mappings.applyMapping(recipe.getSecondItemToBuy()))
+							++count;
+					}
 				}
 			}
 		}

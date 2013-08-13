@@ -9,40 +9,25 @@ import java.util.Map.Entry;
 import cpw.mods.fml.common.network.Player;
 import schmoller.unifier.packets.ModPacketChangeMapping;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class ServerMappings extends NetworkedMappings
+public class GlobalMappings extends Mappings
 {
 	private File mFile;
-	public ServerMappings( File file )
+	public GlobalMappings( File file )
 	{
 		mFile = file;
+		mShouldExecute = false;
 	}
 	
 	@Override
 	public void applyChanges( ModPacketChangeMapping changes, Player sender )
 	{
-		// Check permissions
-		if(sender instanceof EntityPlayer)
-		{
-			if(!ModForgeUnifier.canPlayerEdit((EntityPlayer)sender))
-			{
-				ModForgeUnifier.packetHandler.sendPacketToClient(asPacket(), (EntityPlayer)sender);
-				return;
-			}
-		}
-		
 		super.applyChanges(changes, sender);
-		
-		if(Utilities.isServer())
-		{
-			ModForgeUnifier.packetHandler.sendPacketToAllClients(changes);
-		}
 		
 		try
 		{
@@ -54,6 +39,21 @@ public class ServerMappings extends NetworkedMappings
 		}
 	}
 
+	@Override
+	public void endModify()
+	{
+		super.endModify();
+		
+		try
+		{
+			save();
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public void save() throws IOException
 	{

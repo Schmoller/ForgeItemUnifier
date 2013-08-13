@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -23,7 +22,11 @@ public class Mappings
 	private IdentityHashMap<ItemStack, ItemStack> mOriginals = new IdentityHashMap<ItemStack, ItemStack>();
 	
 	protected HashMap<String, ItemStack> mMappings = new HashMap<String, ItemStack>();
-	private HashMap<String, ItemStack> mPendingMappings = null;
+	protected HashMap<String, ItemStack> mPendingMappings = null;
+	
+	private Mappings mParent = null;
+	protected boolean mShouldExecute = true;
+	private boolean mEditing = false;
 	
 	// All entries never allowed to be simplified
 	public static List<String> mBlackList = Arrays.asList(new String[] {"logWood","plankWood","slabWood","stairWood","stickWood","treeSapling","treeLeaves", "itemRecord"});
@@ -75,10 +78,10 @@ public class Mappings
 	 */
 	public ItemStack getMapping(String name)
 	{
-		if(mPendingMappings != null && mPendingMappings.containsKey(name))
+		if(mEditing && mPendingMappings.containsKey(name))
 		{
 			ItemStack item = mPendingMappings.get(name);
-			if(item.itemID == 0)
+			if(item.itemID == -1)
 				return null;
 			return item;
 		}
@@ -92,7 +95,7 @@ public class Mappings
 	 */
 	public void changeMapping(String oreName, ItemStack item)
 	{
-		if(mPendingMappings != null)
+		if(mEditing)
 			mPendingMappings.put(oreName, item);
 		else
 			mMappings.put(oreName, item);
@@ -110,8 +113,12 @@ public class Mappings
 		if(oreId == -1)
 			return false;
 		
-		ItemStack mapping = mMappings.get(OreDictionary.getOreName(oreId));
-		if(mapping == null)
+		String oreName = OreDictionary.getOreName(oreId);
+		ItemStack mapping = mMappings.get(oreName);
+		if(mParent != null && mapping == null)
+			mapping = mParent.mMappings.get(oreName);
+		
+		if(mapping == null || mapping.itemID == 0)
 		{
 			mapping = mOriginals.remove(input);
 			if(mapping != null)
@@ -157,44 +164,23 @@ public class Mappings
 	public void beingModify()
 	{
 		mPendingMappings = new HashMap<String, ItemStack>();
+		mEditing = true;
 	}
 	
 	public void endModify()
 	{
+		mEditing = false;
+		
 		for(Entry<String, ItemStack> entry : mPendingMappings.entrySet())
 		{
-			if(entry.getValue().itemID == 0)
+			if(entry.getValue().itemID == -1 || (entry.getValue().itemID == 0 && mParent == null))
 				mMappings.remove(entry.getKey());
 			else
 				mMappings.put(entry.getKey(), entry.getValue());
 		}
 		
-		if(!Utilities.isServer())
-		{
-			ModPacketChangeMapping mappings = new ModPacketChangeMapping();
-			mappings.newMappings = (Map<String, ItemStack>) mPendingMappings.clone();
-			
-			ModForgeUnifier.packetHandler.sendPacketToServer(mappings);
-		}
-		else
-		{
-			ModPacketChangeMapping mappings = new ModPacketChangeMapping();
-			mappings.newMappings = (Map<String, ItemStack>) mPendingMappings.clone();
-			ModForgeUnifier.packetHandler.sendPacketToAllClients(mappings);
-			
-			try
-			{
-				save();
-			}
-			catch(IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		
-		ModForgeUnifier.manager.execute(this);
-		
-		mPendingMappings = null;
+		if(mShouldExecute)
+			ModForgeUnifier.manager.execute(this);
 	}
 	
 	public void applyChanges(ModPacketChangeMapping changes, Player sender)
@@ -207,7 +193,8 @@ public class Mappings
 				mMappings.put(entry.getKey(), entry.getValue());
 		}
 		
-		ModForgeUnifier.manager.execute(this);
+		if(mShouldExecute)
+			ModForgeUnifier.manager.execute(this);
 	}
 	
 	public void restoreOriginals()
@@ -216,7 +203,8 @@ public class Mappings
 		for(Entry<String, ItemStack> mapping : mMappings.entrySet())
 			mapping.setValue(blank);
 
-		ModForgeUnifier.manager.execute(this);
+		if(mShouldExecute)
+			ModForgeUnifier.manager.execute(this);
 		
 		mMappings.clear();
 	}
@@ -252,5 +240,15 @@ public class Mappings
 		}
 		
 		mHasSafeguarded = true;
+	}
+	
+	public Mappings getParent()
+	{
+		return mParent;
+	}
+	
+	public void setParent(Mappings parent)
+	{
+		mParent = parent;
 	}
 }

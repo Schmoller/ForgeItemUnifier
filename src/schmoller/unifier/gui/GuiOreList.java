@@ -115,9 +115,17 @@ public class GuiOreList extends GuiScreen
 		fontRenderer.drawString(fontRenderer.trimStringToWidth(entry.getKey(), width), this.x + 26, y + 9, 0xFFFFFF);
 		fontRenderer.drawString("Available: " + entry.getValue().size(), this.x + 26, y + 10 + fontRenderer.FONT_HEIGHT, 0xAAAAAA);
 		
+		boolean isGlobal = false;
 		ItemStack item = mMappings.getMapping(entry.getKey());
 		
-		if(item != null)
+		if(item == null && mMappings.getParent() != null)
+		{
+			item = mMappings.getParent().getMapping(entry.getKey());
+			isGlobal = true;
+		}
+		
+		if(item != null && item.itemID != 0)
+			// TODO: Draw something for global
 			mParent.drawItemStack(item, x + 6, y + 9);
 		else
 			// TODO: Render unknown symbol here
@@ -130,13 +138,20 @@ public class GuiOreList extends GuiScreen
 	protected void slotHover(int index, int x, int y, int mouseX, int mouseY, Tessellator tes)
 	{
 		Entry<String, Set<ItemStack>> entry = mOreDict.get(index);
+		boolean isGlobal = false;
 		ItemStack item = mMappings.getMapping(entry.getKey());
+		
+		if(item == null && mMappings.getParent() != null)
+		{
+			item = mMappings.getParent().getMapping(entry.getKey());
+			isGlobal = true;
+		}
 		
 		if (mouseX >= 6 && mouseX < 6 + 18 && mouseY >= 9 && mouseY < 9 + 18)
 		{
 			List list;
 			
-			if(item != null)
+			if(item != null && item.itemID != 0)
 			{
 				list = item.getTooltip(this.mc.thePlayer, false);
 				for (int k = 0; k < list.size(); ++k)
@@ -153,6 +168,14 @@ public class GuiOreList extends GuiScreen
 					list.add(EnumChatFormatting.YELLOW + "Unknown");
 				else
 					list.add(EnumChatFormatting.YELLOW + container.getName());
+				
+				if(isGlobal)
+					list.add(EnumChatFormatting.DARK_RED + "Global Setting");
+			}
+			else if(item != null && item.itemID == 0)
+			{
+				list = new ArrayList<String>();
+				list.add(EnumChatFormatting.YELLOW + "Not Mapped");
 			}
 			else
 			{
