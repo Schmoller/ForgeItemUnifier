@@ -47,6 +47,8 @@ import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.network.IConnectionHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.common.versioning.VersionParser;
+import cpw.mods.fml.common.versioning.VersionRange;
 import cpw.mods.fml.relauncher.Side;
 
 public class ModForgeUnifier extends DummyModContainer implements IModPacketHandler, IConnectionHandler 
@@ -292,5 +294,11 @@ public class ModForgeUnifier extends DummyModContainer implements IModPacketHand
 	public static boolean canPlayerEdit(EntityPlayer player)
 	{
 		return (FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().areCommandsAllowed(player.username));
+	}
+	
+	@Override
+	public VersionRange acceptableMinecraftVersionRange()
+	{
+		return VersionParser.parseRange("1.5.2");
 	}
 }
