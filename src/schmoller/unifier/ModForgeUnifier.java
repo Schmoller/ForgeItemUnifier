@@ -162,6 +162,7 @@ public class ModForgeUnifier implements IModPacketHandler, IConnectionHandler
 		manager.registerModProcessor("GregTech_Addon", PlateBenderProcessor.class);
 		manager.registerModProcessor("GregTech_Addon", VacuumFreezerProcessor.class);
 		manager.registerModProcessor("GregTech_Addon", WiremillProcessor.class);
+		manager.registerModProcessor("GregTech_Addon", GTUnificatorProcessor.class);
 	}
 	
 	@ServerStarting

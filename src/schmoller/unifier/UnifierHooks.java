@@ -8,7 +8,6 @@ import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLLog;
 
 public class UnifierHooks
 {
@@ -25,8 +24,6 @@ public class UnifierHooks
 			if(recipe.getSecondItemToBuy() != null)
 				ModForgeUnifier.mappings.applyMapping(recipe.getSecondItemToBuy());	
 		}
-
-		FMLLog.info("Merchant Load " + list.toString());
 	}
 	
 	/**

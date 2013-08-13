@@ -170,7 +170,7 @@ public class GuiOreList extends GuiScreen
 					list.add(EnumChatFormatting.YELLOW + container.getName());
 				
 				if(isGlobal)
-					list.add(EnumChatFormatting.DARK_RED + "Global Setting");
+					list.add(EnumChatFormatting.BLUE + "Global Setting");
 			}
 			else if(item != null && item.itemID == 0)
 			{

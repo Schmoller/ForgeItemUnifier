@@ -283,8 +283,8 @@ public class GuiUnifierSettings extends GuiScreen
 					drawItemStack(unknownItem, (int)((width + 80) / 2), 80);
 					
 					drawString(this.fontRenderer, "Not mapped", (int)((width + 130) / 2), 80, 0xffffff);
-					if(item != null)
-						drawString(this.fontRenderer, EnumChatFormatting.DARK_RED + "Overrides Global Setting", (int)((width + 130) / 2), 91, 0xffffff);
+					if(item != null && mMappings.getParent() != null)
+						drawString(this.fontRenderer, EnumChatFormatting.BLUE + "Overrides Global Setting", (int)((width + 130) / 2), 91, 0xffffff);
 					else
 						drawString(this.fontRenderer, EnumChatFormatting.YELLOW + "Unknown", (int)((width + 130) / 2), 91, 0xffffff);
 				}
@@ -316,7 +316,7 @@ public class GuiUnifierSettings extends GuiScreen
 						if(mouseX >= xx-1 && mouseX < xx + 17 && mouseY >= yy-1 && mouseY < yy + 17)
 						{
 							hoverItem = option;
-							drawRect(xx-1, yy-1, xx + 17, yy + 17, -2130706433);
+							drawRect(xx-1, yy-1, xx + 17, yy + 17, 0x80FFFFFF);
 							
 							if(Mouse.isButtonDown(0) && !mHasClicked)
 							{
@@ -337,6 +337,13 @@ public class GuiUnifierSettings extends GuiScreen
 								mLastClicked = index;
 							}
 						}
+//						else if(option.itemID == -1)
+//						{
+//							drawRect(xx-1, yy-1, xx + 17, yy, 0x50aaaaFF);
+//							drawRect(xx-1, yy + 16, xx + 17, yy + 17, 0x50aaaaFF);
+//							drawRect(xx-1, yy, xx, yy + 16, 0x50aaaaFF);
+//							drawRect(xx + 16, yy, xx + 17, yy + 16, 0x50aaaaFF);
+//						}
 						
 						if(option.itemID == 0)
 							drawItemStack(unknownItem, xx, yy);
@@ -383,7 +390,7 @@ public class GuiUnifierSettings extends GuiScreen
 					{
 						list = new ArrayList<String>();
 						list.add(EnumChatFormatting.YELLOW + "No Mapping");
-						list.add(EnumChatFormatting.RED + "Global Mapping");
+						list.add(EnumChatFormatting.BLUE + "Global Setting");
 					}
 					else
 					{
@@ -403,7 +410,7 @@ public class GuiUnifierSettings extends GuiScreen
 						else
 							list.add(EnumChatFormatting.YELLOW + container.getName());
 						
-						list.add(EnumChatFormatting.RED + "Global Mapping");
+						list.add(EnumChatFormatting.BLUE + "Global Setting");
 					}
 				}
 				else

@@ -23,7 +23,11 @@ public class ModPacketChangeMapping extends ModPacket
 		{
 			output.writeUTF(entry.getKey());
 			output.writeInt(entry.getValue().itemID);
+			
+			int id = entry.getValue().itemID;
+			entry.getValue().itemID = 0;
 			output.writeInt(entry.getValue().getItemDamage());
+			entry.getValue().itemID = id;
 		}
 	}
 
