@@ -2,8 +2,8 @@ package schmoller.unifier.mods.tinkersConstruct;
 
 import java.util.List;
 
-import mods.tinker.tconstruct.TConstruct;
-import mods.tinker.tconstruct.library.crafting.CastingRecipe;
+import tconstruct.TConstruct;
+import tconstruct.library.crafting.CastingRecipe;
 import schmoller.unifier.IProcessor;
 import schmoller.unifier.Mappings;
 
