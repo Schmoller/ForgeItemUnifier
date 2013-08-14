@@ -1,10 +1,10 @@
 [
 {
   "modid": "ForgeUnifier",
-  "name": "Forge Unifier",
-  "description": "The best solution to having multiple types of equivalent objects",
+  "name": "Forge Item Unifier",
+  "description": "The best solution to having multiple types of equivalent items",
   "version": "##FUVersion##",
-  "mcversion": "1.5.2",
+  "mcversion": "1.6.2",
   "updateUrl": "",
   "authors": ["Schmoller"],
   "parent": "",

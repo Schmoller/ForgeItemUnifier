@@ -36,26 +36,7 @@ public class NameHelper
 	
 	static
 	{
-		VersionRange version = VersionParser.parseRange("1.5.2");
-		guiMainMenu.addName(version, "bkf");
-		guiButton.addName(version, "awg");
-		entityVillager.addName(version, "sm");
-		merchantRecipeList.addName(version, "zr");
-		nbtTagCompound.addName(version, "bs");
-		
-		initGui.addName(version, "A_");
-		actionPerformed.addName(version, "a");
-		buttonList.addName(version, "k");
-		width.addName(version, "h");
-		insertionPointVar.addName(version, "t");
-		
-		id.addName(version, "f");
-		
-		readEntityFromNBT.addName(version, "a");
-		addDefaultEquipmentAndRecipies.addName(version, "t");
-		buyingList.addName(version, "i");
-		
-		version = VersionParser.parseRange("1.6.2");
+		VersionRange version = VersionParser.parseRange("1.6.2");
 		guiMainMenu.addName(version, "blq");
 		guiButton.addName(version, "auq");
 		entityVillager.addName(version, "ua");

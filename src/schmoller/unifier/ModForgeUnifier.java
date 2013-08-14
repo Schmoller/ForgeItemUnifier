@@ -2,6 +2,7 @@ package schmoller.unifier;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 import com.google.common.eventbus.EventBus;
@@ -66,6 +67,8 @@ public class ModForgeUnifier extends DummyModContainer implements IModPacketHand
 		meta.modId = "ForgeUnifier";
 		meta.name = "Forge Item Unifier";
 		meta.version = "##FUVersion##";
+		meta.description = "The best solution to having multiple types of equivalent items";
+		meta.authorList = Arrays.asList("Schmoller");
 	}
 	
 	@Override
