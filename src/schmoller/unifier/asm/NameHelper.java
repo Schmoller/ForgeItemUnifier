@@ -1,8 +1,13 @@
 package schmoller.unifier.asm;
 
+import java.util.HashMap;
+
+import cpw.mods.fml.common.versioning.VersionParser;
+import cpw.mods.fml.common.versioning.VersionRange;
+import cpw.mods.fml.relauncher.FMLInjectionData;
+
 public class NameHelper
 {
-	// TODO: Add in obfuscated names
 	public static TypeName guiMainMenu = new TypeName("net.minecraft.client.gui.GuiMainMenu");
 	public static TypeName guiButton = new TypeName("net.minecraft.client.gui.GuiButton");
 	public static TypeName entityVillager = new TypeName("net.minecraft.entity.passive.EntityVillager");
@@ -17,7 +22,44 @@ public class NameHelper
 	
 	public static ObjectName readEntityFromNBT = new ObjectName(NameType.Method, entityVillager, "readEntityFromNBT");
 	public static ObjectName addDefaultEquipmentAndRecipies = new ObjectName(NameType.Method, entityVillager, "addDefaultEquipmentAndRecipies");
-	public static ObjectName buyingList = new ObjectName(NameType.Field, entityVillager, "readEntityFromNBT");
+	public static ObjectName buyingList = new ObjectName(NameType.Field, entityVillager, "buyingList");
+	
+	private static boolean mIsObfuscated = false;
+	private static VersionRange mVersion;
+	
+	static
+	{
+		VersionRange version = VersionParser.parseRange("1.5.2");
+		guiMainMenu.addName(version, "bkf");
+		guiButton.addName(version, "awg");
+		entityVillager.addName(version, "sm");
+		merchantRecipeList.addName(version, "zr");
+		
+		initGui.addName(version, "A_");
+		actionPerformed.addName(version, "a");
+		buttonList.addName(version, "k");
+		width.addName(version, "h");
+		
+		id.addName(version, "f");
+		
+		readEntityFromNBT.addName(version, "a");
+		addDefaultEquipmentAndRecipies.addName(version, "t");
+		buyingList.addName(version, "i");
+	}
+	
+	static void init()
+	{
+		mVersion = VersionParser.parseRange((String)FMLInjectionData.data()[4]);
+		try
+		{
+			Class.forName("net.minecraft.world.World");
+			mIsObfuscated = false;
+		}
+		catch(ClassNotFoundException e)
+		{
+			mIsObfuscated = true;
+		}
+	}
 	
 	public enum NameType
 	{
@@ -28,6 +70,7 @@ public class NameHelper
 	public static class TypeName
 	{
 		private String mName;
+		private HashMap<VersionRange, String> mObfuscatedNames = new HashMap<VersionRange, String>();
 		
 		public TypeName(String name)
 		{
@@ -36,17 +79,25 @@ public class NameHelper
 		
 		public String getName()
 		{
-			return mName;
+			if(mIsObfuscated)
+				return mObfuscatedNames.get(mVersion);
+			else
+				return mName;
 		}
 		
 		public String getPath()
 		{
-			return mName.replaceAll("\\.", "/");
+			return getName().replaceAll("\\.", "/");
 		}
 		
 		public String getDesc()
 		{
-			return "L" + mName.replaceAll("\\.", "/");
+			return "L" + getName().replaceAll("\\.", "/");
+		}
+		
+		public void addName(VersionRange version, String name)
+		{
+			mObfuscatedNames.put(version, name);
 		}
 	}
 	
@@ -55,6 +106,7 @@ public class NameHelper
 		private String mName;
 		private NameType mType;
 		private TypeName mOwner;
+		private HashMap<VersionRange, String> mObfuscatedNames = new HashMap<VersionRange, String>();
 		
 		public ObjectName(NameType type, TypeName owner, String name)
 		{
@@ -65,9 +117,15 @@ public class NameHelper
 		
 		public String getName()
 		{
-			return mName;
+			if(mIsObfuscated)
+				return mObfuscatedNames.get(mVersion);
+			else
+				return mName;
 		}
 		
-		
+		public void addName(VersionRange version, String name)
+		{
+			mObfuscatedNames.put(version, name);
+		}
 	}
 }

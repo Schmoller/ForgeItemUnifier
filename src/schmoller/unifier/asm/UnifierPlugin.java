@@ -65,6 +65,7 @@ public class UnifierPlugin implements IFMLLoadingPlugin
 	public String[] getASMTransformerClass()
 	{
 		versionCheck("[1.5.2]", "ForgeUnifier");
+		NameHelper.init();
 		return new String[] { "schmoller.unifier.asm.HookInjectorTransformer" };
 	}
 
