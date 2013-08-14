@@ -39,7 +39,6 @@ public class PacketManager implements IPacketHandler
 
 	public PacketManager()
 	{
-		FMLLog.info("PacketManager: %s", getClass().getSimpleName());
 	}
 	
 	public static int registerPacket(Class<? extends ModPacket> type)

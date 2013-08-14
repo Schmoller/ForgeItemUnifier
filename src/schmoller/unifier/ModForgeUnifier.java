@@ -32,11 +32,9 @@ import net.minecraft.network.NetLoginHandler;
 import net.minecraft.network.packet.NetHandler;
 import net.minecraft.network.packet.Packet1Login;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.common.Configuration;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.DummyModContainer;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.LoadController;
 import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.common.event.FMLConstructionEvent;
@@ -58,8 +56,6 @@ public class ModForgeUnifier extends DummyModContainer implements IModPacketHand
 	public static GlobalMappings globalMappings = null;
 	public static NetworkedMappings mappings = null;
 	public static ProcessorManager manager;
-	
-	private Configuration mConfig;
 	
 	public static PacketManager packetHandler;
 	
@@ -92,12 +88,9 @@ public class ModForgeUnifier extends DummyModContainer implements IModPacketHand
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event)
 	{
-		log = FMLLog.getLogger().getLogger("OreUnifier");
+		log = Logger.getLogger("OreUnifier");
 		log.setUseParentHandlers(true);
-		
-		File configFile = event.getSuggestedConfigurationFile();
-		mConfig = new Configuration(configFile);
-		
+
 		manager = new ProcessorManager();
 	}
 	
@@ -105,10 +98,10 @@ public class ModForgeUnifier extends DummyModContainer implements IModPacketHand
 	public void init(FMLInitializationEvent event)
 	{
 		packetHandler.initialize("FrgUni");
-		packetHandler.registerHandler(this);
+		PacketManager.registerHandler(this);
 		
-		packetHandler.registerPacket(ModPacketOpenGui.class);
-		packetHandler.registerPacket(ModPacketChangeMapping.class);
+		PacketManager.registerPacket(ModPacketOpenGui.class);
+		PacketManager.registerPacket(ModPacketChangeMapping.class);
 		
 		NetworkRegistry.instance().registerConnectionHandler(this);
 		
