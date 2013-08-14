@@ -16,6 +16,7 @@ import schmoller.unifier.mods.factorization.*;
 import schmoller.unifier.mods.forestry.*;
 import schmoller.unifier.mods.gregtech.*;
 import schmoller.unifier.mods.ic2.*;
+import schmoller.unifier.mods.mekanism.*;
 import schmoller.unifier.mods.railcraft.*;
 import schmoller.unifier.mods.thaumcraft.*;
 import schmoller.unifier.mods.thermalExpansion.*;
@@ -186,6 +187,14 @@ public class ModForgeUnifier extends DummyModContainer implements IModPacketHand
 		manager.registerModProcessor("GregTech_Addon", VacuumFreezerProcessor.class);
 		manager.registerModProcessor("GregTech_Addon", WiremillProcessor.class);
 		manager.registerModProcessor("GregTech_Addon", GTUnificatorProcessor.class);
+		
+		// Mekanism
+		manager.registerModProcessor("Mekanism", CombinerProcessor.class);
+		manager.registerModProcessor("Mekanism", CrusherProcessor.class);
+		manager.registerModProcessor("Mekanism", EnrichmentChamberProcessor.class);
+		manager.registerModProcessor("Mekanism", OsmiumCompressorProcessor.class);
+		manager.registerModProcessor("Mekanism", MetallurgicInfuserProcessor.class);
+		manager.registerModProcessor("Mekanism", PurificationChamberProcessor.class);
 	}
 	
 	@Subscribe

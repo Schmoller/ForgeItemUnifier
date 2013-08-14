@@ -25,5 +25,9 @@
 	<classpathentry kind="lib" path="/Minecraft/lib/appeng-rv11-b.jar"/>
 	<classpathentry kind="lib" path="D:/Existing Mods/gregtechmod-deobf.zip"/>
 	<classpathentry kind="lib" path="D:/Existing Mods/ThermalExpansion-2.4.6.0-deobf.jar"/>
+	<classpathentry kind="lib" path="D:/Existing Mods/MekanismGenerators-v5.5.7.171-deobf.jar"/>
+	<classpathentry kind="lib" path="D:/Existing Mods/MekanismTools-v5.5.7.171-deobf.jar"/>
+	<classpathentry kind="lib" path="D:/Existing Mods/Mekanism-v5.5.7.171-deobf.jar"/>
+	<classpathentry kind="lib" path="D:/Existing Mods/StevesCarts2.0.0.a122-deobf.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
