@@ -3,31 +3,34 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Minecraft"/>
-	<classpathentry kind="lib" path="/Minecraft/jars/bin/jinput.jar"/>
-	<classpathentry kind="lib" path="/Minecraft/jars/bin/lwjgl_util.jar"/>
-	<classpathentry kind="lib" path="/Minecraft/jars/bin/lwjgl.jar"/>
-	<classpathentry kind="lib" path="/Minecraft/lib/argo-3.2-src.jar" sourcepath="/Minecraft/lib/argo-3.2-src.jar"/>
-	<classpathentry kind="lib" path="/Minecraft/lib/asm-debug-all-4.1.jar" sourcepath="/Minecraft/lib/asm-4.1-bin.zip"/>
-	<classpathentry kind="lib" path="/Minecraft/lib/bcprov-debug-jdk15on-148.jar" sourcepath="/Minecraft/lib/bcprov-jdk15on-148-src.zip"/>
-	<classpathentry kind="lib" path="/Minecraft/lib/guava-14.0-rc3-sources.jar"/>
-	<classpathentry kind="lib" path="/Minecraft/lib/guava-14.0-rc3.jar" sourcepath="/Minecraft/lib/guava-14.0-rc3-sources.jar"/>
-	<classpathentry kind="lib" path="/Minecraft/lib/minecraft.jar"/>
-	<classpathentry kind="lib" path="/Minecraft/lib/scala-library.jar" sourcepath="/Minecraft/lib/scala-library.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/CodeChickenCore"/>
-	<classpathentry kind="lib" path="/Minecraft/lib/Buildcraft.jar"/>
-	<classpathentry kind="lib" path="/Minecraft/lib/ComputerCraft1.53.jar"/>
 	<classpathentry kind="lib" path="D:/Existing Mods/Factorization-0.8.01-deobf.jar"/>
 	<classpathentry kind="lib" path="D:/Existing Mods/forestry-A-2.2.8.4-deobf.jar"/>
 	<classpathentry kind="lib" path="D:/Existing Mods/industrialcraft-2_1.117.921-deobf.jar"/>
 	<classpathentry kind="lib" path="D:/Existing Mods/Railcraft_1.5.2-7.3.0.0-deobf.jar"/>
 	<classpathentry kind="lib" path="D:/Existing Mods/TConstruct_1.3.6.7-deobf.jar"/>
 	<classpathentry kind="lib" path="D:/Existing Mods/Thaumcraft3.0.5h-deobf.zip"/>
-	<classpathentry kind="lib" path="/Minecraft/lib/appeng-rv11-b.jar"/>
 	<classpathentry kind="lib" path="D:/Existing Mods/gregtechmod-deobf.zip"/>
 	<classpathentry kind="lib" path="D:/Existing Mods/ThermalExpansion-2.4.6.0-deobf.jar"/>
 	<classpathentry kind="lib" path="D:/Existing Mods/MekanismGenerators-v5.5.7.171-deobf.jar"/>
 	<classpathentry kind="lib" path="D:/Existing Mods/MekanismTools-v5.5.7.171-deobf.jar"/>
 	<classpathentry kind="lib" path="D:/Existing Mods/Mekanism-v5.5.7.171-deobf.jar"/>
 	<classpathentry kind="lib" path="D:/Existing Mods/StevesCarts2.0.0.a122-deobf.zip"/>
+	<classpathentry kind="lib" path="/Minecraft/jars/libraries/argo/argo/2.25_fixed/argo-2.25_fixed.jar" sourcepath="/Minecraft/jars/libraries/net/sourceforge/argo/argo/2.25/argo-2.25-sources.jar"/>
+	<classpathentry kind="lib" path="/Minecraft/jars/libraries/com/google/code/gson/gson/2.2.2/gson-2.2.2.jar" sourcepath="/Minecraft/jars/libraries/com/google/code/gson/gson/2.2.2/gson-2.2.2-sources.jar"/>
+	<classpathentry kind="lib" path="/Minecraft/jars/libraries/com/google/guava/guava/14.0/guava-14.0.jar" sourcepath="/Minecraft/jars/libraries/com/google/guava/guava/14.0/guava-14.0-sources.jar"/>
+	<classpathentry kind="lib" path="/Minecraft/jars/libraries/commons-io/commons-io/2.4/commons-io-2.4.jar" sourcepath="/Minecraft/jars/libraries/commons-io/commons-io/2.4/commons-io-2.4-sources.jar"/>
+	<classpathentry kind="lib" path="/Minecraft/jars/libraries/lzma/lzma/0.0.1/lzma-0.0.1.jar"/>
+	<classpathentry kind="lib" path="/Minecraft/jars/libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar" sourcepath="/Minecraft/jars/libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5-sources.jar"/>
+	<classpathentry kind="lib" path="/Minecraft/jars/libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar" sourcepath="/Minecraft/jars/libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0-sources.jar"/>
+	<classpathentry kind="lib" path="/Minecraft/jars/libraries/net/minecraft/launchwrapper/1.3/launchwrapper-1.3.jar"/>
+	<classpathentry kind="lib" path="/Minecraft/jars/libraries/net/sf/jopt-simple/jopt-simple/4.5/jopt-simple-4.5.jar" sourcepath="/Minecraft/jars/libraries/net/sf/jopt-simple/jopt-simple/4.5/jopt-simple-4.5-sources.jar"/>
+	<classpathentry kind="lib" path="/Minecraft/jars/libraries/net/sourceforge/argo/argo/2.25/argo-2.25.jar"/>
+	<classpathentry kind="lib" path="/Minecraft/jars/libraries/org/apache/commons/commons-lang3/3.1/commons-lang3-3.1.jar" sourcepath="/Minecraft/jars/libraries/org/apache/commons/commons-lang3/3.1/commons-lang3-3.1-sources.jar"/>
+	<classpathentry kind="lib" path="/Minecraft/jars/libraries/org/bouncycastle/bcprov-jdk15on/1.47/bcprov-jdk15on-1.47.jar" sourcepath="/Minecraft/jars/libraries/org/bouncycastle/bcprov-jdk15on/1.47/bcprov-jdk15on-1.47-sources.jar"/>
+	<classpathentry kind="lib" path="/Minecraft/jars/libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar" sourcepath="/Minecraft/jars/libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0-sources.jar"/>
+	<classpathentry kind="lib" path="/Minecraft/jars/libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar" sourcepath="/Minecraft/jars/libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0-sources.jar"/>
+	<classpathentry kind="lib" path="/Minecraft/jars/libraries/org/ow2/asm/asm-debug-all/4.1/asm-debug-all-4.1.jar" sourcepath="/Minecraft/jars/libraries/org/ow2/asm/asm-debug-all/4.1/asm-debug-all-4.1-sources.jar"/>
+	<classpathentry kind="lib" path="D:/Existing Mods/appeng-rv11-b.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

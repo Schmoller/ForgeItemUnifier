@@ -2,6 +2,8 @@ package schmoller.unifier.asm;
 
 import java.util.Iterator;
 
+import net.minecraft.launchwrapper.IClassTransformer;
+
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -17,8 +19,6 @@ import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
 import org.objectweb.asm.Opcodes;
-
-import cpw.mods.fml.relauncher.IClassTransformer;
 
 public class HookInjectorTransformer implements IClassTransformer
 {

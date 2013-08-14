@@ -122,7 +122,7 @@ public class PacketManager implements IPacketHandler
 	
 	public void sendPacketToWorld(ModPacket packet, World world) 
 	{
-		PacketDispatcher.sendPacketToAllInDimension(toPacket(packet), world.getWorldInfo().getDimension());
+		PacketDispatcher.sendPacketToAllInDimension(toPacket(packet), world.provider.dimensionId);
 	}
 	
 	@ForgeSubscribe

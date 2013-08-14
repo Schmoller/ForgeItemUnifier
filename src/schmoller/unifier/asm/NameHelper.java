@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import net.minecraft.launchwrapper.LaunchClassLoader;
+
 import cpw.mods.fml.common.versioning.DefaultArtifactVersion;
 import cpw.mods.fml.common.versioning.VersionParser;
 import cpw.mods.fml.common.versioning.VersionRange;
 import cpw.mods.fml.relauncher.FMLInjectionData;
-import cpw.mods.fml.relauncher.RelaunchClassLoader;
 
 public class NameHelper
 {
@@ -60,7 +61,7 @@ public class NameHelper
 		mVersion = new DefaultArtifactVersion((String)FMLInjectionData.data()[4]);
 		try
         {
-			mIsObfuscated = ((RelaunchClassLoader)NameHelper.class.getClassLoader()).getClassBytes("net.minecraft.world.World") == null;
+			mIsObfuscated = ((LaunchClassLoader)NameHelper.class.getClassLoader()).getClassBytes("net.minecraft.world.World") == null;
         }
         catch(IOException iox)
         {

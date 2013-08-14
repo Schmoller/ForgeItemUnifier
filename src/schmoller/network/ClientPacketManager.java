@@ -36,6 +36,6 @@ public class ClientPacketManager extends PacketManager
 	{
 		// Integrated server
 		if(Utilities.isServer())
-			PacketDispatcher.sendPacketToAllInDimension(toPacket(packet), world.getWorldInfo().getDimension());
+			PacketDispatcher.sendPacketToAllInDimension(toPacket(packet), world.provider.dimensionId);
 	}
 }

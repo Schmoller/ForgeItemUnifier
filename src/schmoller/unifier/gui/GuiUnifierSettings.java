@@ -25,6 +25,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StringTranslate;
@@ -85,7 +86,7 @@ public class GuiUnifierSettings extends GuiScreen
 			buttonList.add(button);
 		}
 
-		buttonList.add(new GuiButton(200, width / 2 - 100, height - 25, StringTranslate.getInstance().translateKey("gui.done")));
+		buttonList.add(new GuiButton(200, width / 2 - 100, height - 25, I18n.func_135053_a("gui.done")));
 		setOreCategory(mSelected);
 	}
 	
@@ -227,7 +228,7 @@ public class GuiUnifierSettings extends GuiScreen
 		drawDefaultBackground();
         
         Tessellator tes = Tessellator.instance;
-        mc.renderEngine.bindTexture("/gui/background.png");
+        //mc.renderEngine.bindTexture("/gui/background.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         
 //        tes.startDrawingQuads();
