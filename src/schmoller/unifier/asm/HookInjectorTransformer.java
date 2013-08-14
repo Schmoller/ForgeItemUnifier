@@ -28,8 +28,8 @@ public class HookInjectorTransformer implements IClassTransformer
 		if(name.equals(NameHelper.guiMainMenu.getName()))
 		{
 			ClassNode node = ASMUtilities.getClassNode(bytes);
-			MethodNode initGui = ASMUtilities.getMethodNode(node, NameHelper.initGui.getName());
-			MethodNode actionPerformed = ASMUtilities.getMethodNode(node, NameHelper.actionPerformed.getName());
+			MethodNode initGui = ASMUtilities.getMethodNode(node, NameHelper.initGui.getName(), "()V");
+			MethodNode actionPerformed = ASMUtilities.getMethodNode(node, NameHelper.actionPerformed.getName(), ASMUtilities.buildDescription("V", NameHelper.guiButton));
 			InsnList list = new InsnList();
 
 			list.add(new VarInsnNode(Opcodes.ALOAD, 0));
@@ -73,8 +73,8 @@ public class HookInjectorTransformer implements IClassTransformer
 		else if(name.equals(NameHelper.entityVillager.getName()))
 		{
 			ClassNode node = ASMUtilities.getClassNode(bytes);
-			MethodNode readFromNBTMethod = ASMUtilities.getMethodNode(node, NameHelper.readEntityFromNBT.getName());
-			MethodNode addDefEquipMethod = ASMUtilities.getMethodNode(node, NameHelper.addDefaultEquipmentAndRecipies.getName());
+			MethodNode readFromNBTMethod = ASMUtilities.getMethodNode(node, NameHelper.readEntityFromNBT.getName(), ASMUtilities.buildDescription("V", NameHelper.nbtTagCompound));
+			MethodNode addDefEquipMethod = ASMUtilities.getMethodNode(node, NameHelper.addDefaultEquipmentAndRecipies.getName(), "(I)V");
 			
 			InsnList list = new InsnList();
 			list.add(new VarInsnNode(Opcodes.ALOAD, 0));
@@ -110,8 +110,7 @@ public class HookInjectorTransformer implements IClassTransformer
 			if(node.getOpcode() == Opcodes.PUTFIELD)
 			{
 				FieldInsnNode fNode = (FieldInsnNode)node;
-				
-				if(fNode.owner.equals("net/minecraft/entity/passive/EntityVillager") && fNode.name.equals("buyingList"))
+				if(fNode.owner.equals(NameHelper.entityVillager.getPath()) && fNode.name.equals(NameHelper.buyingList.getName()))
 					found = true;
 			}
 		}
@@ -149,7 +148,7 @@ public class HookInjectorTransformer implements IClassTransformer
 			else if(node.getOpcode() == Opcodes.GETFIELD)
 			{
 				FieldInsnNode field = (FieldInsnNode)node;
-				if(field.owner.equals("net/minecraft/client/gui/GuiMainMenu") && field.name.equals("field_104025_t") && field.desc.equals("Ljava/lang/Object;"))
+				if(field.owner.equals(NameHelper.guiMainMenu.getPath()) && field.name.equals(NameHelper.insertionPointVar.getName()) && field.desc.equals("Ljava/lang/Object;"))
 				{
 					if(last == null)
 						throw new RuntimeException("Injection point in GuiMainMenu for initGui was not found");

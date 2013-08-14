@@ -1,10 +1,14 @@
 package schmoller.unifier.asm;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
+import cpw.mods.fml.common.versioning.DefaultArtifactVersion;
 import cpw.mods.fml.common.versioning.VersionParser;
 import cpw.mods.fml.common.versioning.VersionRange;
 import cpw.mods.fml.relauncher.FMLInjectionData;
+import cpw.mods.fml.relauncher.RelaunchClassLoader;
 
 public class NameHelper
 {
@@ -12,11 +16,13 @@ public class NameHelper
 	public static TypeName guiButton = new TypeName("net.minecraft.client.gui.GuiButton");
 	public static TypeName entityVillager = new TypeName("net.minecraft.entity.passive.EntityVillager");
 	public static TypeName merchantRecipeList = new TypeName("net.minecraft.village.MerchantRecipeList");
+	public static TypeName nbtTagCompound = new TypeName("net.minecraft.nbt.NBTTagCompound");
 
 	public static ObjectName initGui = new ObjectName(NameType.Method, guiMainMenu, "initGui");
 	public static ObjectName actionPerformed = new ObjectName(NameType.Method, guiMainMenu, "actionPerformed");
 	public static ObjectName buttonList = new ObjectName(NameType.Field, guiMainMenu, "buttonList");
 	public static ObjectName width = new ObjectName(NameType.Field, guiMainMenu, "width");
+	public static ObjectName insertionPointVar = new ObjectName(NameType.Field, guiMainMenu, "field_104025_t");
 	
 	public static ObjectName id = new ObjectName(NameType.Field, guiButton, "id");
 	
@@ -25,7 +31,7 @@ public class NameHelper
 	public static ObjectName buyingList = new ObjectName(NameType.Field, entityVillager, "buyingList");
 	
 	private static boolean mIsObfuscated = false;
-	private static VersionRange mVersion;
+	private static DefaultArtifactVersion mVersion;
 	
 	static
 	{
@@ -34,11 +40,13 @@ public class NameHelper
 		guiButton.addName(version, "awg");
 		entityVillager.addName(version, "sm");
 		merchantRecipeList.addName(version, "zr");
+		nbtTagCompound.addName(version, "bs");
 		
 		initGui.addName(version, "A_");
 		actionPerformed.addName(version, "a");
 		buttonList.addName(version, "k");
 		width.addName(version, "h");
+		insertionPointVar.addName(version, "t");
 		
 		id.addName(version, "f");
 		
@@ -49,16 +57,15 @@ public class NameHelper
 	
 	static void init()
 	{
-		mVersion = VersionParser.parseRange((String)FMLInjectionData.data()[4]);
+		mVersion = new DefaultArtifactVersion((String)FMLInjectionData.data()[4]);
 		try
-		{
-			Class.forName("net.minecraft.world.World");
-			mIsObfuscated = false;
-		}
-		catch(ClassNotFoundException e)
-		{
-			mIsObfuscated = true;
-		}
+        {
+			mIsObfuscated = ((RelaunchClassLoader)NameHelper.class.getClassLoader()).getClassBytes("net.minecraft.world.World") == null;
+        }
+        catch(IOException iox)
+        {
+        	mIsObfuscated = true;
+        }
 	}
 	
 	public enum NameType
@@ -80,7 +87,14 @@ public class NameHelper
 		public String getName()
 		{
 			if(mIsObfuscated)
-				return mObfuscatedNames.get(mVersion);
+			{
+				for(Entry<VersionRange, String> entry : mObfuscatedNames.entrySet())
+				{
+					if(entry.getKey().containsVersion(mVersion))
+						return entry.getValue();
+				}
+				return null;
+			}
 			else
 				return mName;
 		}
@@ -104,21 +118,31 @@ public class NameHelper
 	public static class ObjectName
 	{
 		private String mName;
+		private Object[] mDesc;
+		
 		private NameType mType;
 		private TypeName mOwner;
 		private HashMap<VersionRange, String> mObfuscatedNames = new HashMap<VersionRange, String>();
 		
-		public ObjectName(NameType type, TypeName owner, String name)
+		public ObjectName(NameType type, TypeName owner, String name, Object... desc)
 		{
 			mName = name;
 			mType = type;
 			mOwner = owner;
+			mDesc = desc;
 		}
 		
 		public String getName()
 		{
 			if(mIsObfuscated)
-				return mObfuscatedNames.get(mVersion);
+			{
+				for(Entry<VersionRange, String> entry : mObfuscatedNames.entrySet())
+				{
+					if(entry.getKey().containsVersion(mVersion))
+						return entry.getValue();
+				}
+				return null;
+			}
 			else
 				return mName;
 		}
