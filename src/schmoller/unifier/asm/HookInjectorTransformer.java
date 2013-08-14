@@ -98,7 +98,6 @@ public class HookInjectorTransformer implements IClassTransformer
 	public AbstractInsnNode findInjectionPointVillagerREFNBT(MethodNode method)
 	{
 		Iterator<AbstractInsnNode> it = method.instructions.iterator();
-		AbstractInsnNode last = null;
 		boolean found = false;
 		while(it.hasNext())
 		{

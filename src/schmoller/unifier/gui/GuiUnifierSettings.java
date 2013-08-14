@@ -23,12 +23,10 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StringTranslate;
 
 public class GuiUnifierSettings extends GuiScreen
 {
@@ -227,17 +225,7 @@ public class GuiUnifierSettings extends GuiScreen
 	{
 		drawDefaultBackground();
         
-        Tessellator tes = Tessellator.instance;
-        //mc.renderEngine.bindTexture("/gui/background.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        
-//        tes.startDrawingQuads();
-//        tes.setColorRGBA_I(4210752, 255);
-//        tes.addVertexWithUV(0.0D, 60.0D, zLevel, 0.0D, 60 / 32D);
-//        tes.addVertexWithUV((double)width, 60.0D, zLevel, width / 32D, 60 / 32D);
-//        tes.addVertexWithUV((double)width, 0.0D, zLevel, width / 32D, 0.0D);
-//        tes.addVertexWithUV(0.0D, 0.0D, zLevel, 0.0D, 0.0D);
-//        tes.draw();
         
         drawCenteredString(this.fontRenderer, "Forge Item Unifier Options", width / 2, 15, 0xffffff);
         
@@ -264,36 +252,36 @@ public class GuiUnifierSettings extends GuiScreen
 				if(mMappings.getParent() != null)
 					globalMapping = mMappings.getParent().getMapping(selected.getKey());
 
-				drawString(this.fontRenderer, "Using: ", (int)((width + 10) / 2), 85, 0xffffff);
+				drawString(this.fontRenderer, "Using: ", (width + 10) / 2, 85, 0xffffff);
 				
 				if(item != null && item.itemID != 0)
 				{
-					drawItemStack(item, (int)((width + 80) / 2), 80);
+					drawItemStack(item, (width + 80) / 2, 80);
 					
-					drawString(this.fontRenderer, item.getDisplayName(), (int)((width + 130) / 2), 80, 0xffffff);
+					drawString(this.fontRenderer, item.getDisplayName(), (width + 130) / 2, 80, 0xffffff);
 					ModContainer container = Utilities.findOwningMod(item);
 					
 					if(container == null)
-						drawString(this.fontRenderer, EnumChatFormatting.YELLOW + "Unknown", (int)((width + 130) / 2), 91, 0xffffff);
+						drawString(this.fontRenderer, EnumChatFormatting.YELLOW + "Unknown", (width + 130) / 2, 91, 0xffffff);
 					else
-						drawString(this.fontRenderer, EnumChatFormatting.YELLOW + container.getName(), (int)((width + 130) / 2), 91, 0xffffff);
+						drawString(this.fontRenderer, EnumChatFormatting.YELLOW + container.getName(), (width + 130) / 2, 91, 0xffffff);
 					
 				}
 				else
 				{
 					// TODO: Draw unknown symbol here
-					drawItemStack(unknownItem, (int)((width + 80) / 2), 80);
+					drawItemStack(unknownItem, (width + 80) / 2, 80);
 					
-					drawString(this.fontRenderer, "Not mapped", (int)((width + 130) / 2), 80, 0xffffff);
+					drawString(this.fontRenderer, "Not mapped", (width + 130) / 2, 80, 0xffffff);
 					if(item != null && mMappings.getParent() != null)
-						drawString(this.fontRenderer, EnumChatFormatting.BLUE + "Overrides Global Setting", (int)((width + 130) / 2), 91, 0xffffff);
+						drawString(this.fontRenderer, EnumChatFormatting.BLUE + "Overrides Global Setting", (width + 130) / 2, 91, 0xffffff);
 					else
-						drawString(this.fontRenderer, EnumChatFormatting.YELLOW + "Unknown", (int)((width + 130) / 2), 91, 0xffffff);
+						drawString(this.fontRenderer, EnumChatFormatting.YELLOW + "Unknown", (width + 130) / 2, 91, 0xffffff);
 				}
 				
 				if(mEditable)
 				{
-					drawString(this.fontRenderer, "Available Choices:", (int)((width + 10) / 2), 110, 0xffffff);
+					drawString(this.fontRenderer, "Available Choices:", (width + 10) / 2, 110, 0xffffff);
 					
 					int xx = ((width + 10) / 2);
 					int yy = 125;

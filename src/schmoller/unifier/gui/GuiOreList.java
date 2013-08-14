@@ -24,7 +24,6 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class GuiOreList extends GuiScreen
 {
-	private OreCategory mCategory;
 	private Mappings mMappings;
 	private ArrayList<Entry<String, Set<ItemStack>>> mOreDict;
 	private GuiUnifierSettings mParent;
@@ -55,11 +54,10 @@ public class GuiOreList extends GuiScreen
 		
 		mParent = parent;
 		
-		mCategory = category;
 		mMappings = mappings;
 		
 		mOreDict = new ArrayList<Entry<String,Set<ItemStack>>>();
-		Set<String> oreNames = mappings.getMappableOres(category);
+		Set<String> oreNames = Mappings.getMappableOres(category);
 		for(String oreName : oreNames)
 		{
 			List<ItemStack> ores = OreDictionary.getOres(oreName);
@@ -115,6 +113,7 @@ public class GuiOreList extends GuiScreen
 		fontRenderer.drawString(fontRenderer.trimStringToWidth(entry.getKey(), width), this.x + 26, y + 9, 0xFFFFFF);
 		fontRenderer.drawString("Available: " + entry.getValue().size(), this.x + 26, y + 10 + fontRenderer.FONT_HEIGHT, 0xAAAAAA);
 		
+		@SuppressWarnings("unused") // I will use this to draw some indicator eventually
 		boolean isGlobal = false;
 		ItemStack item = mMappings.getMapping(entry.getKey());
 		
@@ -220,10 +219,10 @@ public class GuiOreList extends GuiScreen
 //                tes.draw();
                 tes.startDrawingQuads();
                 tes.setColorRGBA_I(0, 128);
-                tes.addVertexWithUV((double)(x), (double)(yOffset + slotHeight), 0.0D, 0.0D, 1.0D);
-                tes.addVertexWithUV((double)(x + width - 8), (double)(yOffset + slotHeight), 0.0D, 1.0D, 1.0D);
-                tes.addVertexWithUV((double)(x + width - 8), (double)(yOffset), 0.0D, 1.0D, 0.0D);
-                tes.addVertexWithUV((double)(x), (double)(yOffset), 0.0D, 0.0D, 0.0D);
+                tes.addVertexWithUV(x, yOffset + slotHeight, 0.0D, 0.0D, 1.0D);
+                tes.addVertexWithUV(x + width - 8, yOffset + slotHeight, 0.0D, 1.0D, 1.0D);
+                tes.addVertexWithUV(x + width - 8, yOffset, 0.0D, 1.0D, 0.0D);
+                tes.addVertexWithUV(x, yOffset, 0.0D, 0.0D, 0.0D);
                 tes.draw();
                 
                 drawRect(x, yOffset, x + width - 8, yOffset + 1, 0xff2222aa);
@@ -257,24 +256,24 @@ public class GuiOreList extends GuiScreen
 		tes.startDrawingQuads();
         tes.setColorRGBA_I(0, 255);
         tes.addVertexWithUV((double)(x + width) - 8, (double)y + height, zLevel, 0.0D, 1.0D);
-        tes.addVertexWithUV((double)(x + width), (double)y + height, zLevel, 1.0D, 1.0D);
-        tes.addVertexWithUV((double)(x + width), (double)y, zLevel, 1.0D, 0.0D);
-        tes.addVertexWithUV((double)(x + width) - 8, (double)y, zLevel, 0.0D, 0.0D);
+        tes.addVertexWithUV(x + width, (double)y + height, zLevel, 1.0D, 1.0D);
+        tes.addVertexWithUV(x + width, y, zLevel, 1.0D, 0.0D);
+        tes.addVertexWithUV((double)(x + width) - 8, y, zLevel, 0.0D, 0.0D);
         tes.draw();
         
         tes.startDrawingQuads();
         tes.setColorRGBA_I(8421504, 255);
-        tes.addVertexWithUV((double)(x + width) - 8, (double)(scrollTop + scrollHandleSize), zLevel, 0.0D, 1.0D);
-        tes.addVertexWithUV((double)(x + width), (double)(scrollTop + scrollHandleSize), zLevel, 1.0D, 1.0D);
-        tes.addVertexWithUV((double)(x + width), (double)scrollTop, zLevel, 1.0D, 0.0D);
-        tes.addVertexWithUV((double)(x + width) - 8, (double)scrollTop, zLevel, 0.0D, 0.0D);
+        tes.addVertexWithUV((double)(x + width) - 8, scrollTop + scrollHandleSize, zLevel, 0.0D, 1.0D);
+        tes.addVertexWithUV(x + width, scrollTop + scrollHandleSize, zLevel, 1.0D, 1.0D);
+        tes.addVertexWithUV(x + width, scrollTop, zLevel, 1.0D, 0.0D);
+        tes.addVertexWithUV((double)(x + width) - 8, scrollTop, zLevel, 0.0D, 0.0D);
         tes.draw();
         tes.startDrawingQuads();
         tes.setColorRGBA_I(12632256, 255);
-        tes.addVertexWithUV((double)(x + width) - 8, (double)(scrollTop + scrollHandleSize - 1), zLevel, 0.0D, 1.0D);
-        tes.addVertexWithUV((double)((x + width) - 1), (double)(scrollTop + scrollHandleSize - 1), zLevel, 1.0D, 1.0D);
-        tes.addVertexWithUV((double)((x + width) - 1), (double)scrollTop, zLevel, 1.0D, 0.0D);
-        tes.addVertexWithUV((double)(x + width) - 8, (double)scrollTop, zLevel, 0.0D, 0.0D);
+        tes.addVertexWithUV((double)(x + width) - 8, scrollTop + scrollHandleSize - 1, zLevel, 0.0D, 1.0D);
+        tes.addVertexWithUV((x + width) - 1, scrollTop + scrollHandleSize - 1, zLevel, 1.0D, 1.0D);
+        tes.addVertexWithUV((x + width) - 1, scrollTop, zLevel, 1.0D, 0.0D);
+        tes.addVertexWithUV((double)(x + width) - 8, scrollTop, zLevel, 0.0D, 0.0D);
         tes.draw();
         
         GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -284,25 +283,11 @@ public class GuiOreList extends GuiScreen
         {
             if (mInitialMouseClickY == -1.0F)
             {
-                boolean var7 = true;
                 mClickedScrollbar = false;
 
                 if (mouseY >= y && mouseY < y + height)
                 {
                 	int relY = mouseY - y + mScrollOffset;
-                	
-                    //var11 = var10 / this.slotHeight;
-
-                    
-//                        boolean var12 = var11 == this.selectedIndex && System.currentTimeMillis() - this.lastClickTime < 250L;
-//                        this.elementClicked(var11, var12);
-//                        this.selectedIndex = var11;
-//                        this.lastClickTime = System.currentTimeMillis();
-//                    else if (mouseX >= x && mouseX < x + width && var10 < 0)
-//                    {
-//                        this.func_27255_a(mouseX - boxLeft, mouseY - this.top + (int)this.scrollDistance - 4);
-//                        var7 = false;
-//                    }
 
                     if (mouseX >= x + width - 8 && mouseX < x + width)
                     {
@@ -326,7 +311,7 @@ public class GuiOreList extends GuiScreen
                     	elementClicked(index, doubleClick);
                     	mSelected = index;
                     	mLastClickTime = System.currentTimeMillis();
-                    	mInitialMouseClickY = (float)mouseY;
+                    	mInitialMouseClickY = mouseY;
                     }
                 }
                 else
