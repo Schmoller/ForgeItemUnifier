@@ -7,9 +7,10 @@ public enum OreCategory
 	Blocks,
 	Nuggets,
 	Dyes,
-	Items,
 	Ores,
 	Misc;
+	
+	public static final OreCategory[] VALID_CATEGORIES = {Ingots, Dusts, Blocks, Nuggets, Dyes, Ores};
 	
 	public static OreCategory getCategory(String oreName)
 	{
@@ -21,8 +22,6 @@ public enum OreCategory
 			return Ingots;
 		else if(oreName.startsWith("block"))
 			return Blocks;
-		else if(oreName.startsWith("item"))
-			return Items;
 		else if(oreName.startsWith("dye"))
 			return Dyes;
 		else if(oreName.startsWith("nugget"))

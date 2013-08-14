@@ -72,11 +72,11 @@ public class GuiUnifierSettings extends GuiScreen
 	{
 		int space = width - 40;
 		
-		int size = space / OreCategory.values().length;
+		int size = space / OreCategory.VALID_CATEGORIES.length;
 		
-		int totalSize = (size + 1) * OreCategory.values().length;
+		int totalSize = (size + 1) * OreCategory.VALID_CATEGORIES.length;
 		
-		for(OreCategory category : OreCategory.values())
+		for(OreCategory category : OreCategory.VALID_CATEGORIES)
 		{
 			GuiButton button = new GuiButton(category.ordinal(), (width - totalSize) / 2 + (size + 1) * category.ordinal(), 35, size, 20, category.name());
 			if(category == mSelected)
@@ -108,12 +108,12 @@ public class GuiUnifierSettings extends GuiScreen
 	@Override
 	protected void actionPerformed( GuiButton button )
 	{
-		if(button.id < OreCategory.values().length)
+		if(button.id < OreCategory.VALID_CATEGORIES.length)
 		{
 			if(button.id != mSelected.ordinal())
 			{
 				((GuiButton)buttonList.get(mSelected.ordinal())).enabled = true;
-				mSelected = OreCategory.values()[button.id];
+				mSelected = OreCategory.VALID_CATEGORIES[button.id];
 				button.enabled = false;
 				setOreCategory(mSelected);
 			}

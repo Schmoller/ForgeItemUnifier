@@ -23,7 +23,7 @@ public class GTUnificatorProcessor implements IProcessor
 			if(mapping == null && mappings.getParent() != null)
 				mapping = mappings.getParent().getMapping(oreName);
 			
-			if(mapping != null)
+			if(mapping != null && mapping.itemID > 0)
 				GT_OreDictUnificator.override(oreName, mapping);
 		}
 		
