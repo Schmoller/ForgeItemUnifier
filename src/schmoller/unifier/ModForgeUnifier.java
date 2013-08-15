@@ -302,7 +302,7 @@ public class ModForgeUnifier extends DummyModContainer implements IModPacketHand
 	
 	public static boolean canPlayerEdit(EntityPlayer player)
 	{
-		return (FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().areCommandsAllowed(player.username));
+		return (FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() || FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().areCommandsAllowed(player.username));
 	}
 	
 	@Override
