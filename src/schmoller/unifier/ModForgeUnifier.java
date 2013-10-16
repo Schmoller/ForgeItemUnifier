@@ -125,6 +125,7 @@ public class ModForgeUnifier extends DummyModContainer implements IModPacketHand
 		manager.registerProcessor(new CraftingProcessor());
 		manager.registerProcessor(new SmeltingProcessor());
 		manager.registerProcessor(new VillagerTradeProcessor());
+		manager.registerProcessor(new ChestLootProcessor());
 		
 		// IC2 processors
 		manager.registerModProcessor("IC2", CompressorProcessor.class);
