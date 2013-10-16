@@ -8,6 +8,8 @@ import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class UnifierHooks
 {
@@ -30,6 +32,7 @@ public class UnifierHooks
 	 * Called upon clicking the unifier options button in the main menu
 	 * @param menu
 	 */
+	@SideOnly(Side.CLIENT)
 	public static void onOpenGlobalOptions(GuiMainMenu menu)
 	{
 		Mappings.safeGuardOreDict();
