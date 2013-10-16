@@ -22,7 +22,7 @@ public class ScrapboxProcessor implements IProcessor
 	{
 		int remapCount = 0;
 		
-		Map<ItemStack, Object> recipes = Recipes.scrapboxDrops.getRecipes();
+		Map<ItemStack, Object> recipes = Recipes.scrapboxDrops.getDrops();
 		
 		for(Entry<ItemStack, Object> recipe : recipes.entrySet())
 		{

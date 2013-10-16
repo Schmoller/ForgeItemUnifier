@@ -130,7 +130,10 @@ public class ModForgeUnifier extends DummyModContainer implements IModPacketHand
 		manager.registerModProcessor("IC2", CompressorProcessor.class);
 		manager.registerModProcessor("IC2", ExtractorProcessor.class);
 		manager.registerModProcessor("IC2", MaceratorProcessor.class);
+		manager.registerModProcessor("IC2", ThermalCentrifugeProcessor.class);
+		manager.registerModProcessor("IC2", OreWashingPlantProcessor.class);
 		manager.registerModProcessor("IC2", ScrapboxProcessor.class);
+		manager.registerModProcessor("IC2", MetalFormerProcessor.class);
 
 		// Railcraft processors
 		manager.registerModProcessor("Railcraft", BlastFurnaceProcessor.class);
@@ -139,8 +142,7 @@ public class ModForgeUnifier extends DummyModContainer implements IModPacketHand
 		manager.registerModProcessor("Railcraft", RollingMachineProcessor.class);
 		
 		// Thaumcraft processors
-		manager.registerModProcessor("Thaumcraft", ArcaneCraftingProcessor.class);
-		manager.registerModProcessor("Thaumcraft", CrucibleProcessor.class);
+		manager.registerModProcessor("Thaumcraft", ThaumcraftCraftingProcessor.class);
 		manager.registerModProcessor("Thaumcraft", SmelterBonusProcessor.class);
 		
 		// Forestry processors

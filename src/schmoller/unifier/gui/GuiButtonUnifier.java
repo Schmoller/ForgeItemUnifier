@@ -29,6 +29,8 @@ public class GuiButtonUnifier extends GuiButton
         	par1Minecraft.getTextureManager().bindTexture(GuiButton.buttonTextures);
 
         	GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        	
+        	par1Minecraft.getTextureManager().bindTexture(par1Minecraft.getTextureManager().getResourceLocation(Item.ingotIron.getSpriteNumber()));
             
             this.drawTexturedModelRectFromIcon(this.xPosition + 2, this.yPosition + 2, ico, 16, 16);
         }

@@ -1,15 +1,12 @@
 package schmoller.unifier.mods.ic2;
 
 import java.util.Map;
-import java.util.Map.Entry;
-
-import net.minecraft.item.ItemStack;
-
+import ic2.api.recipe.IRecipeInput;
+import ic2.api.recipe.RecipeOutput;
 import ic2.api.recipe.Recipes;
-import schmoller.unifier.IProcessor;
 import schmoller.unifier.Mappings;
 
-public class MaceratorProcessor implements IProcessor
+public class MaceratorProcessor extends BasicIC2MachineProcessor
 {
 	@Override
 	public String getName()
@@ -20,20 +17,9 @@ public class MaceratorProcessor implements IProcessor
 	@Override
 	public int applyMappings( Mappings mappings )
 	{
-		int remapCount = 0;
+		Map<IRecipeInput, RecipeOutput> recipes = Recipes.macerator.getRecipes();
 		
-		Map<ItemStack, Object> recipes = Recipes.macerator.getRecipes();
-		
-		for(Entry<ItemStack, Object> recipe : recipes.entrySet())
-		{
-			if(recipe.getValue() instanceof ItemStack)
-			{
-				if(mappings.applyMapping((ItemStack)recipe.getValue()))
-					++remapCount;
-			}
-		}
-		
-		return remapCount;
+		return apply(mappings, recipes);
 	}
 
 }

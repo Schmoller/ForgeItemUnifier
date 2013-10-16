@@ -32,6 +32,8 @@ public class GuiUnifierSettings extends GuiScreen
 {
 	private GuiOreList mOreList = null;
 	private OreCategory mSelected = OreCategory.Ingots;
+	private int mSelectedIndex = 0;
+	
 	private RenderItem renderItem = new RenderItem();
 	
 	private long mLastClickTime = 0;
@@ -75,13 +77,15 @@ public class GuiUnifierSettings extends GuiScreen
 		
 		int totalSize = (size + 1) * OreCategory.VALID_CATEGORIES.length;
 		
+		int index = 0;
 		for(OreCategory category : OreCategory.VALID_CATEGORIES)
 		{
-			GuiButton button = new GuiButton(category.ordinal(), (width - totalSize) / 2 + (size + 1) * category.ordinal(), 35, size, 20, category.name());
+			GuiButton button = new GuiButton(index, (width - totalSize) / 2 + (size + 1) * index, 35, size, 20, category.name());
 			if(category == mSelected)
 				button.enabled = false;
 			
 			buttonList.add(button);
+			++index;
 		}
 
 		buttonList.add(new GuiButton(200, width / 2 - 100, height - 25, I18n.getString("gui.done")));
@@ -109,11 +113,12 @@ public class GuiUnifierSettings extends GuiScreen
 	{
 		if(button.id < OreCategory.VALID_CATEGORIES.length)
 		{
-			if(button.id != mSelected.ordinal())
+			if(button.id != mSelectedIndex)
 			{
-				((GuiButton)buttonList.get(mSelected.ordinal())).enabled = true;
+				((GuiButton)buttonList.get(mSelectedIndex)).enabled = true;
 				mSelected = OreCategory.VALID_CATEGORIES[button.id];
 				button.enabled = false;
+				mSelectedIndex = button.id;
 				setOreCategory(mSelected);
 			}
 		}

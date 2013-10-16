@@ -6,18 +6,18 @@ import ic2.api.recipe.RecipeOutput;
 import ic2.api.recipe.Recipes;
 import schmoller.unifier.Mappings;
 
-public class CompressorProcessor extends BasicIC2MachineProcessor
+public class ThermalCentrifugeProcessor extends BasicIC2MachineProcessor
 {
 	@Override
 	public String getName()
 	{
-		return "Compressor";
+		return "Thermal Centrifuge";
 	}
 
 	@Override
 	public int applyMappings( Mappings mappings )
 	{
-		Map<IRecipeInput, RecipeOutput> recipes = Recipes.compressor.getRecipes();
+		Map<IRecipeInput, RecipeOutput> recipes = Recipes.centrifuge.getRecipes();
 		
 		return apply(mappings, recipes);
 	}

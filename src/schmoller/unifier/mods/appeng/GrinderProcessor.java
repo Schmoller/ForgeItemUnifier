@@ -18,7 +18,7 @@ public class GrinderProcessor implements IProcessor
 	@Override
 	public int applyMappings( Mappings mappings )
 	{
-		List<IAppEngGrinderRecipe> recipes = AppEngApi.GrinderRecipes.getRecipes();
+		List<IAppEngGrinderRecipe> recipes = AppEngApi.getInstance().getGrinderRecipeManage().getRecipes();
 		
 		int count = 0;
 		for(IAppEngGrinderRecipe recipe : recipes)
