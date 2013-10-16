@@ -36,12 +36,12 @@ public class NameHelper
 	
 	static
 	{
-		VersionRange version = VersionParser.parseRange("1.6.2");
-		guiMainMenu.addName(version, "blq");
-		guiButton.addName(version, "auq");
-		entityVillager.addName(version, "ua");
-		merchantRecipeList.addName(version, "abl");
-		nbtTagCompound.addName(version, "bx");
+		VersionRange version = VersionParser.parseRange("1.6.4");
+		guiMainMenu.addName(version, "blt");
+		guiButton.addName(version, "aut");
+		entityVillager.addName(version, "ub");
+		merchantRecipeList.addName(version, "abm");
+		nbtTagCompound.addName(version, "by");
 		
 		initGui.addName(version, "A_");
 		actionPerformed.addName(version, "a");

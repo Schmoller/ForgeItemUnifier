@@ -84,7 +84,7 @@ public class GuiUnifierSettings extends GuiScreen
 			buttonList.add(button);
 		}
 
-		buttonList.add(new GuiButton(200, width / 2 - 100, height - 25, I18n.func_135053_a("gui.done")));
+		buttonList.add(new GuiButton(200, width / 2 - 100, height - 25, I18n.getString("gui.done")));
 		setOreCategory(mSelected);
 	}
 	

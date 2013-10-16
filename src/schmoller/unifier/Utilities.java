@@ -63,7 +63,7 @@ public class Utilities
 
 		try
 		{
-			name = item.getItem().getLocalizedName(item);
+			name = item.getItem().getItemDisplayName(item);
 		}
 		catch(Exception e)
 		{
@@ -75,7 +75,7 @@ public class Utilities
 			if(name == null || name.isEmpty())
 				name = LanguageRegistry.instance().getStringLocalization(item.getItem().getUnlocalizedName(item) + ".name");
 			if(name == null || name.isEmpty())
-				name = item.getItemName();
+				name = item.getDisplayName();
 		}
 		catch(Exception e)
 		{

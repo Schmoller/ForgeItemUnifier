@@ -16,7 +16,7 @@ import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
 
 @TransformerExclusions("schmoller.unifier.asm")
-@MCVersion("1.6.2")
+@MCVersion("1.6.4")
 public class UnifierPlugin implements IFMLLoadingPlugin
 {
 	@Override
@@ -64,7 +64,7 @@ public class UnifierPlugin implements IFMLLoadingPlugin
 	@Override
 	public String[] getASMTransformerClass()
 	{
-		versionCheck("[1.6.2]", "ForgeUnifier");
+		versionCheck("[1.6.4]", "ForgeUnifier");
 		NameHelper.init();
 		return new String[] { "schmoller.unifier.asm.HookInjectorTransformer" };
 	}

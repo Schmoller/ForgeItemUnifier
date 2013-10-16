@@ -298,12 +298,12 @@ public class ModForgeUnifier extends DummyModContainer implements IModPacketHand
 	
 	public static boolean canPlayerEdit(EntityPlayer player)
 	{
-		return (FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() || FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().areCommandsAllowed(player.username));
+		return (FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() || FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().getOps().contains(player.username.toLowerCase()));
 	}
 	
 	@Override
 	public VersionRange acceptableMinecraftVersionRange()
 	{
-		return VersionParser.parseRange("1.5.2");
+		return VersionParser.parseRange("1.6.4");
 	}
 }

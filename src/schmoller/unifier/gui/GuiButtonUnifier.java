@@ -4,7 +4,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.Item;
 import net.minecraft.util.Icon;
 import org.lwjgl.opengl.GL11;
@@ -27,7 +26,7 @@ public class GuiButtonUnifier extends GuiButton
         {
         	Icon ico = Item.ingotIron.getIconFromDamage(0);
         	
-        	par1Minecraft.func_110434_K().func_110577_a(TextureMap.field_110576_c);
+        	par1Minecraft.getTextureManager().bindTexture(GuiButton.buttonTextures);
 
         	GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             
